@@ -92,7 +92,7 @@ public class Request<T> {
             return this;
         }
 
-        public Builder<T> setType(Class<T> tClass) {
+        public Builder<T> type(Class<T> tClass) {
             this.tClass = tClass;
             return this;
         }
