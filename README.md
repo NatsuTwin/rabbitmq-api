@@ -105,7 +105,8 @@ public class DefaultProtocolListener implements ProtocolListener<TCPMessageRecei
         System.out.println("It works !");
     }
 
-}```
+}
+```
 
 ### Registering to an event
 You can register to an event by using : 
