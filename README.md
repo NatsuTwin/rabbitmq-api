@@ -22,7 +22,7 @@ RabbitMQAPI.hook(String filePath);
 ## Request
 
 ### General information
-The request can be created using the inner class [RequestBuilder](rabbitmq-api/src/main/java/fr/playfull/rmq/query/Request.java).
+The request can be created using the inner class [RequestBuilder](src/main/java/fr/playfull/rmq/query/Request.java).
 You do not have to provide all the elements that the Builder contains. Nevertheless, some of them are crucial to the correct working of the API.
 
 A builder can be created by using the static access `Request.Builder<>()`. It contains a lot of parameters that can be filled in.
@@ -91,12 +91,12 @@ If you do not want to provide a specific marshal, you can use the default marsha
 ### Different events
 There are different events :
 
- • [TCPMessageReceivedEvent](rabbitmq-api/src/main/java/fr/playfull/rmq/event/protocol/TCPMessageReceivedEvent.java) - It allows you to get the message and the extra, but you cannot set an answer.
+ • [TCPMessageReceivedEvent](src/main/java/fr/playfull/rmq/event/protocol/TCPMessageReceivedEvent.java) - It allows you to get the message and the extra, but you cannot set an answer.
 
- • [RPCMessageReceivedEvent](rabbitmq-api/src/main/java/fr/playfull/rmq/event/protocol/RPCMessageReceivedEvent.java) - It allows you to set an answer, as well as to get information.
+ • [RPCMessageReceivedEvent](src/main/java/fr/playfull/rmq/event/protocol/RPCMessageReceivedEvent.java) - It allows you to set an answer, as well as to get information.
 
 ### ProtocolListener
-You have to implement the [ProtocolListener](rabbitmq-api/src/main/java/fr/playfull/rmq/event/protocol/ProtocolListener.java) class.
+You have to implement the [ProtocolListener](src/main/java/fr/playfull/rmq/event/protocol/ProtocolListener.java) class.
 ```java
 public class DefaultProtocolListener implements ProtocolListener<TCPMessageReceivedEvent> {
 
