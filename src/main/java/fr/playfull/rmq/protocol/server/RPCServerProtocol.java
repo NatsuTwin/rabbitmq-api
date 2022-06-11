@@ -44,7 +44,7 @@ public class RPCServerProtocol extends ServerProtocol {
                             message = message.split(":")[0];
                         }
 
-                        this.actualListenedEvent = new RPCMessageReceivedEvent(message, extra);
+                        this.actualListenedEvent = new RPCMessageReceivedEvent(queue, message, extra);
 
                         RabbitMQAPI.getEventBus().publish(actualListenedEvent);
                     } catch(RuntimeException runtimeException) {

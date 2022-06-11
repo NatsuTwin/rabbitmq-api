@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public class RabbitMQAPI {
 
-    private static Logger logger = Logger.getLogger("rmq-logger");
+    private static final Logger logger = Logger.getLogger("rmq-logger");
 
     private static final Forwarder forwarder = new Forwarder();
     private static final EventBus eventBus = new EventBus();
@@ -39,8 +39,8 @@ public class RabbitMQAPI {
         Runtime.getRuntime().addShutdownHook(new Thread(forwarder::closeAll));
     }
 
-    public static void hook(String path) throws IOException {
-        new RabbitMQAPI(path);
+    public static RabbitMQAPI hook(String path) throws IOException {
+        return new RabbitMQAPI(path);
     }
 
     public static Logger getLogger() {

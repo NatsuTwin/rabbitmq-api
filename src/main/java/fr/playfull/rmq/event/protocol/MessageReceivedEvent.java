@@ -6,7 +6,9 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class MessageReceivedEvent extends ProtocolEvent {
 
-    public MessageReceivedEvent(ProtocolType protocolType, String message, String extra) {
-        super(protocolType, message, extra);
+    public MessageReceivedEvent(ProtocolType protocolType, String queueName, String message, String extra) {
+        super(protocolType, queueName, message, extra);
     }
+
+
 }

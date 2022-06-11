@@ -8,8 +8,8 @@ public class RPCMessageReceivedEvent extends MessageReceivedEvent {
 
     private final CompletableFuture<Object> responseFuture = new CompletableFuture<>();
 
-    public RPCMessageReceivedEvent(String message, String extra) {
-        super(ProtocolType.RPC, message, extra);
+    public RPCMessageReceivedEvent(String queueName, String message, String extra) {
+        super(ProtocolType.RPC, queueName, message, extra);
     }
 
     public void setAnswer(Object answer) {

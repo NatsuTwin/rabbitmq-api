@@ -28,7 +28,7 @@ public class TCPServerProtocol extends ServerProtocol {
                         message = message.split(":")[0];
                     }
                     // We publish the event.
-                    TCPMessageReceivedEvent messageReceivedEvent = new TCPMessageReceivedEvent(message, extra);
+                    TCPMessageReceivedEvent messageReceivedEvent = new TCPMessageReceivedEvent(queue, message, extra);
                     RabbitMQAPI.getEventBus().publish(messageReceivedEvent);
                 };
                 getChannel().basicConsume(queue, true, deliverCallback, consumerTag -> { });
