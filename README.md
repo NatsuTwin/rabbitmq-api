@@ -90,7 +90,9 @@ If you do not want to provide a specific marshal, you can use the default marsha
 
 ### Different events
 There are different events :
+
  • [TCPMessageReceivedEvent](rabbitmq-api/src/main/java/fr/playfull/rmq/event/protocol/TCPMessageReceivedEvent.java) - It allows you to get the message and the extra, but you cannot set an answer.
+
  • [RPCMessageReceivedEvent](rabbitmq-api/src/main/java/fr/playfull/rmq/event/protocol/RPCMessageReceivedEvent.java) - It allows you to set an answer, as well as to get information.
 
 ### ProtocolListener
