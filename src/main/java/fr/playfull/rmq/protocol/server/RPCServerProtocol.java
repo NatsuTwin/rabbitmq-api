@@ -17,7 +17,7 @@ public class RPCServerProtocol extends ServerProtocol {
 
     @Override
     public void listen(String queue, RMQMarshal marshal) {
-        Executors.newSingleThreadExecutor().execute(() -> {
+        getThreadPool().execute(() -> {
             try{
                 // We declare & purge our queue
                 getChannel().queueDeclare(queue, false, false, false, null);

@@ -7,11 +7,14 @@ import fr.playfull.rmq.RabbitMQAPI;
 import fr.playfull.rmq.connect.Credentials;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 public abstract class Protocol {
 
     private Connection connection;
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
     public void connect(Credentials credentials) {
         ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -34,4 +37,5 @@ public abstract class Protocol {
         return this.connection;
     }
 
+    protected ExecutorService getThreadPool() { return this.threadPool; }
 }

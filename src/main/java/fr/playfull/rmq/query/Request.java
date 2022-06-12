@@ -52,15 +52,15 @@ public class Request<T> {
 
         private String queueName;
         // RequestAnswer.
-        private Consumer<T> consumer;
-        private Class<T> tClass;
+        private Consumer<T> consumer = ignored -> {};
+        private Class<T> tClass = (Class<T>) Object.class;
         //RequestTimeout
-        private int timeout;
-        private TimeUnit timeUnit;
+        private int timeout = 5;
+        private TimeUnit timeUnit = TimeUnit.SECONDS;
         // RequestMessage
-        private RMQMarshal<?> marshal;
+        private RMQMarshal<?> marshal = RMQMarshal.DEFAULT_MARSHAL;
         private String message;
-        private String extra;
+        private String extra = "";
 
         public Builder<T> message(String message) {
             this.message = message;

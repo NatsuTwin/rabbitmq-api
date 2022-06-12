@@ -16,7 +16,7 @@ public class RPCClientProtocol extends ClientProtocol {
 
     @Override
     public void send(Request request) {
-        Executors.newSingleThreadExecutor().execute(() -> {
+        getThreadPool().execute(() -> {
             try {
                 Channel channel = getConnection().createChannel();
                 String correlationId = UUID.randomUUID().toString();
@@ -33,7 +33,7 @@ public class RPCClientProtocol extends ClientProtocol {
                 requestBuilder.append(request.getRequestMessage().getMessage());
 
                 // If there is an extra
-                if(!request.getRequestMessage().getExtra().isEmpty())
+                if (request.getRequestMessage().getExtra() != null && !request.getRequestMessage().getExtra().isEmpty())
                     requestBuilder.append(":").append(request.getRequestMessage().getExtra());
 
                 // We publish our request data
@@ -43,7 +43,7 @@ public class RPCClientProtocol extends ClientProtocol {
                 BlockingQueue<Object> response = new ArrayBlockingQueue<>(1);
 
                 String consumerTag = channel.basicConsume(replyQueueName, true, (cTag, delivery) -> {
-                    if(delivery.getProperties().getCorrelationId().equals(correlationId)){
+                    if (delivery.getProperties().getCorrelationId().equals(correlationId)) {
                         try {
                             // We take the offer
                             response.offer(request.getRequestMessage().getMarshal().deserialize(delivery.getBody()));
@@ -51,7 +51,8 @@ public class RPCClientProtocol extends ClientProtocol {
                             e.printStackTrace();
                         }
                     }
-                }, cTag -> {});
+                }, cTag -> {
+                });
 
                 // We take the result
                 Object result = response.poll(request.getRequestTimeout().getTimeout(), request.getRequestTimeout().getTimeUnit());
@@ -61,7 +62,7 @@ public class RPCClientProtocol extends ClientProtocol {
                 // We consume the answer
                 request.getRequestAnswer().getConsumer().accept(typeAdapter.get(request.getRequestAnswer().getType(), result));
                 channel.close();
-            } catch(IOException | InterruptedException | TimeoutException exception){
+            } catch (IOException | InterruptedException | TimeoutException exception) {
                 RabbitMQAPI.getLogger().severe(exception.getMessage());
             }
         });

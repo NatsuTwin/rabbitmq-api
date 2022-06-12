@@ -11,7 +11,7 @@ public class TCPClientProtocol extends ClientProtocol {
 
     @Override
     public void send(Request<?> request) {
-        Executors.newSingleThreadExecutor().execute(() -> {
+        getThreadPool().execute(() -> {
             try {
                 Channel channel = getConnection().createChannel();
                 String totalMessage = (request.getRequestMessage().getExtra().isEmpty())

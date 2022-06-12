@@ -12,7 +12,7 @@ public class TCPServerProtocol extends ServerProtocol {
 
     @Override
     public void listen(String queue, RMQMarshal marshal) {
-        Executors.newSingleThreadExecutor().execute(() -> {
+        getThreadPool().execute(() -> {
             try {
                 RabbitMQAPI.getLogger().info("[Server TCP] Received message in queue " + queue);
                 // We declare and purge our queue

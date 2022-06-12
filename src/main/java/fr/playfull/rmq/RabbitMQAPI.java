@@ -5,6 +5,8 @@ import fr.playfull.rmq.event.EventBus;
 import fr.playfull.rmq.forward.Forwarder;
 import fr.playfull.rmq.io.DefaultFileReader;
 import fr.playfull.rmq.io.DefaultFileWriter;
+import fr.playfull.rmq.protocol.ProtocolType;
+import fr.playfull.rmq.query.Request;
 
 import java.io.File;
 import java.io.IOException;
