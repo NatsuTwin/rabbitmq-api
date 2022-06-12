@@ -1,6 +1,5 @@
 package fr.playfull.rmq.query;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class RequestAnswer<T> implements RequestComponent {
@@ -8,8 +7,8 @@ public class RequestAnswer<T> implements RequestComponent {
     private final Consumer<T> tConsumer;
     private final Class<T> tClass;
 
-    private RequestAnswer(ProtocolAnswerBuilder<T> thisBuilder) {
-        this.tConsumer = Objects.requireNonNullElse(thisBuilder.tConsumer, ignored -> {});
+    private RequestAnswer(Builder<T> thisBuilder) {
+        this.tConsumer = thisBuilder.tConsumer;
         this.tClass = thisBuilder.tClass;
     }
 
@@ -21,17 +20,17 @@ public class RequestAnswer<T> implements RequestComponent {
         return tClass;
     }
 
-    protected static class ProtocolAnswerBuilder<T> implements RequestComponent.Builder<ProtocolAnswerBuilder<T>> {
+    protected static class Builder<T> implements RequestComponent.Builder<Builder<T>> {
 
-        private Class<T> tClass;
-        private Consumer<T> tConsumer;
+        private Class<T> tClass = (Class<T>) Object.class;
+        private Consumer<T> tConsumer = ignored -> {};
 
-        public ProtocolAnswerBuilder<T> await(Consumer<T> tConsumer) {
+        public Builder<T> await(Consumer<T> tConsumer) {
             this.tConsumer = tConsumer;
             return self();
         }
 
-        public ProtocolAnswerBuilder<T> type(Class<T> tClass) {
+        public Builder<T> type(Class<T> tClass) {
             this.tClass = tClass;
             return self();
         }
@@ -42,7 +41,7 @@ public class RequestAnswer<T> implements RequestComponent {
         }
 
         @Override
-        public ProtocolAnswerBuilder<T> self() {
+        public Builder<T> self() {
             return this;
         }
     }

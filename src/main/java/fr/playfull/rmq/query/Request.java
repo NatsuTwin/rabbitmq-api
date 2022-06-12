@@ -15,17 +15,17 @@ public class Request<T> {
     private Request(Builder<T> builder) {
         this.queueName = builder.queueName;
 
-        this.requestAnswer = new RequestAnswer.ProtocolAnswerBuilder<T>()
+        this.requestAnswer = new RequestAnswer.Builder<T>()
                 .type(builder.tClass)
                 .await(builder.consumer)
                 .build();
 
-        this.requestTimeout = new RequestTimeout.TimeoutBuilder()
+        this.requestTimeout = new RequestTimeout.Builder()
                 .timeout(builder.timeout)
                 .timeUnit(builder.timeUnit)
                 .build();
 
-        this.requestMessage = new RequestMessage.RequestMessageBuilder()
+        this.requestMessage = new RequestMessage.Builder()
                 .message(builder.message)
                 .extra(builder.extra)
                 .marshal(builder.marshal)
@@ -97,7 +97,7 @@ public class Request<T> {
             return this;
         }
 
-        private Builder<T> await(Consumer<T> consumer) {
+        public Builder<T> await(Consumer<T> consumer) {
             this.consumer = consumer;
             return this;
         }

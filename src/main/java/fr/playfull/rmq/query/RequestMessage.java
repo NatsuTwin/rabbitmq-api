@@ -2,18 +2,16 @@ package fr.playfull.rmq.query;
 
 import fr.playfull.rmq.marshal.RMQMarshal;
 
-import java.util.Objects;
-
 public class RequestMessage implements RequestComponent {
 
     private final String message;
     private final String extra;
     private final RMQMarshal<?> marshal;
 
-    private RequestMessage(RequestMessageBuilder builder) {
-        this.message = Objects.requireNonNull(builder.message);
-        this.extra = Objects.requireNonNullElse(builder.extra, "");
-        this.marshal = Objects.requireNonNullElse(builder.marshal, RMQMarshal.DEFAULT_MARSHAL);
+    private RequestMessage(Builder builder) {
+        this.message = builder.message;
+        this.extra = builder.extra;
+        this.marshal = builder.marshal;
     }
 
     public String getMessage() {
@@ -28,22 +26,22 @@ public class RequestMessage implements RequestComponent {
         return marshal;
     }
 
-    public static class RequestMessageBuilder implements RequestComponent.Builder<RequestMessageBuilder> {
+    public static class Builder implements RequestComponent.Builder<Builder> {
         private String message;
-        private String extra;
-        private RMQMarshal<?> marshal;
+        private String extra = "";
+        private RMQMarshal<?> marshal = RMQMarshal.DEFAULT_MARSHAL;
 
-        public RequestMessageBuilder message(String message) {
+        public Builder message(String message) {
             this.message = message;
             return self();
         }
 
-        public RequestMessageBuilder extra(String extra) {
+        public Builder extra(String extra) {
             this.extra = extra;
             return self();
         }
 
-        public RequestMessageBuilder marshal(RMQMarshal<?> marshal) {
+        public Builder marshal(RMQMarshal<?> marshal) {
             this.marshal = marshal;
             return self();
         }
@@ -54,7 +52,7 @@ public class RequestMessage implements RequestComponent {
         }
 
         @Override
-        public RequestMessageBuilder self() {
+        public Builder self() {
             return this;
         }
     }

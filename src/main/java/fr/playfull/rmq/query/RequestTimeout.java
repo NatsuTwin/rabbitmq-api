@@ -1,6 +1,5 @@
 package fr.playfull.rmq.query;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class RequestTimeout implements RequestComponent {
@@ -8,9 +7,9 @@ public class RequestTimeout implements RequestComponent {
     private final TimeUnit timeUnit;
     private final int timeout;
 
-    private RequestTimeout(TimeoutBuilder builder) {
-        this.timeUnit = Objects.requireNonNullElse(builder.timeUnit, TimeUnit.SECONDS);
-        this.timeout = Objects.requireNonNullElse(builder.timeout, 5);
+    private RequestTimeout(Builder builder) {
+        this.timeUnit = builder.timeUnit;
+        this.timeout = builder.timeout;
     }
 
     public TimeUnit getTimeUnit() {
@@ -21,28 +20,28 @@ public class RequestTimeout implements RequestComponent {
         return timeout;
     }
 
-    public static class TimeoutBuilder implements RequestComponent.Builder<TimeoutBuilder> {
+    public static class Builder implements RequestComponent.Builder<Builder> {
 
-        private TimeUnit timeUnit;
-        private int timeout;
+        private TimeUnit timeUnit = TimeUnit.SECONDS;
+        private int timeout = 5;
 
-        public TimeoutBuilder timeUnit(TimeUnit timeUnit) {
+        public Builder timeUnit(TimeUnit timeUnit) {
             this.timeUnit = timeUnit;
             return self();
         }
 
-        public TimeoutBuilder timeout(int timeout) {
+        public Builder timeout(int timeout) {
             this.timeout = timeout;
             return self();
         }
 
         @Override
         public RequestTimeout build() {
-            return null;
+            return new RequestTimeout(this);
         }
 
         @Override
-        public TimeoutBuilder self() {
+        public Builder self() {
             return this;
         }
     }
