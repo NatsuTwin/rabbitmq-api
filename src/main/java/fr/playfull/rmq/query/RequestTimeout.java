@@ -20,7 +20,7 @@ public class RequestTimeout implements RequestComponent {
         return timeout;
     }
 
-    public static class Builder implements RequestComponent.Builder<Builder> {
+    public static class Builder implements RequestComponent.Builder {
 
         private TimeUnit timeUnit = TimeUnit.SECONDS;
         private int timeout = 5;

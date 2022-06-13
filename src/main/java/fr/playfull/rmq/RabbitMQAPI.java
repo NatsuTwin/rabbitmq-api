@@ -1,12 +1,13 @@
 package fr.playfull.rmq;
 
+import fr.playfull.rmq.connect.Connector;
 import fr.playfull.rmq.connect.Credentials;
+import fr.playfull.rmq.connect.DefaultConnector;
 import fr.playfull.rmq.event.EventBus;
 import fr.playfull.rmq.forward.Forwarder;
 import fr.playfull.rmq.io.DefaultFileReader;
 import fr.playfull.rmq.io.DefaultFileWriter;
 import fr.playfull.rmq.protocol.ProtocolType;
-import fr.playfull.rmq.query.Request;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.util.logging.Logger;
 
 public class RabbitMQAPI {
 
-    private static final Logger logger = Logger.getLogger("rmq-logger");
+    private static final Logger LOGGER = Logger.getLogger("rmq-logger");
 
     private static final Forwarder forwarder = new Forwarder();
     private static final EventBus eventBus = new EventBus();
@@ -35,10 +36,18 @@ public class RabbitMQAPI {
 
         // We read the file.
         Credentials credentials = new DefaultFileReader().read(file);
-        forwarder.connectAll(credentials);
+        Connector connector = new DefaultConnector();
+
+        for(ProtocolType protocolType : ProtocolType.values()) {
+            connector.connect(protocolType.getClientProtocol(), credentials);
+            connector.connect(protocolType.getServerProtocol(), credentials);
+        }
 
         // We set the shutdown hook
-        Runtime.getRuntime().addShutdownHook(new Thread(forwarder::closeAll));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            for(ProtocolType protocolType : ProtocolType.values())
+                connector.disconnect(protocolType.getServerProtocol());
+        }));
     }
 
     public static RabbitMQAPI hook(String path) throws IOException {
@@ -46,7 +55,7 @@ public class RabbitMQAPI {
     }
 
     public static Logger getLogger() {
-        return logger;
+        return LOGGER;
     }
 
     public static Forwarder getForwarder() {

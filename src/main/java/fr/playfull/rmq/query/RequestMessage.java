@@ -26,7 +26,7 @@ public class RequestMessage implements RequestComponent {
         return marshal;
     }
 
-    public static class Builder implements RequestComponent.Builder<Builder> {
+    public static class Builder implements RequestComponent.Builder {
         private String message;
         private String extra = "";
         private RMQMarshal<?> marshal = RMQMarshal.DEFAULT_MARSHAL;

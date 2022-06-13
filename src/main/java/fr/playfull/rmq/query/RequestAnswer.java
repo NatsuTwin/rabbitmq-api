@@ -20,7 +20,7 @@ public class RequestAnswer<T> implements RequestComponent {
         return tClass;
     }
 
-    protected static class Builder<T> implements RequestComponent.Builder<Builder<T>> {
+    protected static class Builder<T> implements RequestComponent.Builder {
 
         private Class<T> tClass = (Class<T>) Object.class;
         private Consumer<T> tConsumer = ignored -> {};
