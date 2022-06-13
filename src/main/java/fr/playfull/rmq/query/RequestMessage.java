@@ -33,17 +33,17 @@ public class RequestMessage implements RequestComponent {
 
         public Builder message(String message) {
             this.message = message;
-            return self();
+            return this;
         }
 
         public Builder extra(String extra) {
             this.extra = extra;
-            return self();
+            return this;
         }
 
         public Builder marshal(RMQMarshal<?> marshal) {
             this.marshal = marshal;
-            return self();
+            return this;
         }
 
         @Override
@@ -51,10 +51,6 @@ public class RequestMessage implements RequestComponent {
             return new RequestMessage(this);
         }
 
-        @Override
-        public Builder self() {
-            return this;
-        }
     }
 
 }

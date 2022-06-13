@@ -5,8 +5,6 @@ public interface RequestComponent {
      interface Builder<T extends Builder<? super T>> {
 
         RequestComponent build();
-
-        T self();
     }
 
 }

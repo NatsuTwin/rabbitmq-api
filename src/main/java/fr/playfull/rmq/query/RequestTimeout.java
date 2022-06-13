@@ -27,12 +27,12 @@ public class RequestTimeout implements RequestComponent {
 
         public Builder timeUnit(TimeUnit timeUnit) {
             this.timeUnit = timeUnit;
-            return self();
+            return this;
         }
 
         public Builder timeout(int timeout) {
             this.timeout = timeout;
-            return self();
+            return this;
         }
 
         @Override
@@ -40,10 +40,6 @@ public class RequestTimeout implements RequestComponent {
             return new RequestTimeout(this);
         }
 
-        @Override
-        public Builder self() {
-            return this;
-        }
     }
 
 }

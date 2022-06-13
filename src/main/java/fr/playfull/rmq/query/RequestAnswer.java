@@ -27,12 +27,12 @@ public class RequestAnswer<T> implements RequestComponent {
 
         public Builder<T> await(Consumer<T> tConsumer) {
             this.tConsumer = tConsumer;
-            return self();
+            return this;
         }
 
         public Builder<T> type(Class<T> tClass) {
             this.tClass = tClass;
-            return self();
+            return this;
         }
 
         @Override
@@ -40,10 +40,6 @@ public class RequestAnswer<T> implements RequestComponent {
             return new RequestAnswer<>(this);
         }
 
-        @Override
-        public Builder<T> self() {
-            return this;
-        }
     }
 
 
