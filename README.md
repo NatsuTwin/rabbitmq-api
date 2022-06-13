@@ -1,16 +1,6 @@
 # RMQ API
 Lightweight API which simplifies communication between two separate entities.
 
-# Maven dependency
-```xml
-<dependency>
-    <groupId>fr.playfull.rmq</groupId>
-    <artifactId>rabbitmq-api</artifactId>
-    <version>2.0.4</version>
-    <scope>compile</scope>
-</dependency>
-```
-
 # How to use it ?
 
 ## Hooking
