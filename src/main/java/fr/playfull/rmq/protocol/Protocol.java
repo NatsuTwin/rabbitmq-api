@@ -1,6 +1,5 @@
 package fr.playfull.rmq.protocol;
 
-import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import fr.playfull.rmq.RabbitMQAPI;
@@ -8,13 +7,13 @@ import fr.playfull.rmq.connect.Credentials;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeoutException;
 
 public abstract class Protocol {
 
     private Connection connection;
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
+    private final ForkJoinPool threadPool = ForkJoinPool.commonPool();
 
     public void connect(Credentials credentials) {
         ConnectionFactory connectionFactory = new ConnectionFactory();

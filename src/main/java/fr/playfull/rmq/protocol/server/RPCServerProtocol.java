@@ -8,7 +8,6 @@ import fr.playfull.rmq.marshal.RMQMarshal;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RPCServerProtocol extends ServerProtocol {

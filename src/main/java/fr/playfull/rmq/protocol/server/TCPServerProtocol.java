@@ -6,7 +6,6 @@ import fr.playfull.rmq.event.protocol.TCPMessageReceivedEvent;
 import fr.playfull.rmq.marshal.RMQMarshal;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
 
 public class TCPServerProtocol extends ServerProtocol {
 
@@ -14,13 +13,14 @@ public class TCPServerProtocol extends ServerProtocol {
     public void listen(String queue, RMQMarshal marshal) {
         getThreadPool().execute(() -> {
             try {
-                RabbitMQAPI.getLogger().info("[Server TCP] Received message in queue " + queue);
+
                 // We declare and purge our queue
                 getChannel().queueDeclare(queue, false, false, false, null);
                 getChannel().queuePurge(queue);
                 getChannel().basicQos(0);
 
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                    RabbitMQAPI.getLogger().info("[Server TCP] Received message in queue " + queue);
                     String message = new String(delivery.getBody(), "UTF-8");
                     String extra = "";
                     if(message.contains(":")) {

@@ -16,7 +16,9 @@ public final class DefaultConnector implements Connector {
     @Override
     public void disconnect(ServerProtocol protocol) {
         try {
-            protocol.getChannel().close();
+            if(protocol.getChannel().isOpen()) {
+                protocol.getChannel().close();
+            }
         } catch (IOException | TimeoutException exception) {
             exception.printStackTrace();
         }
