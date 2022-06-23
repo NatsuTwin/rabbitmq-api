@@ -6,7 +6,7 @@ Lightweight API which simplifies communication between two separate entities.
 <dependency>
     <groupId>fr.playfull.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -29,15 +29,11 @@ A builder can be created by using the static access `Request.Builder()`. It cont
 
 ### Parameters
 
+First of all, the builder instance needs two parameters to be created :
 ```java
-Builder payload(Object payload)
+Builder(String queueName, Object payload)
 ```
-**Must be filled !** Allows you to set the payload (message) that will be sent through the queue.
-
-```java
-Builder queueName(String queueName)
-```
-**Must be filled !** Allows you to set the queue name.
+**Example :** `new Request.Builder("test_queue", 15).build();`
 
 ```java
 Builder timeout(int timeout)

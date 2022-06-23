@@ -43,23 +43,18 @@ public class Request {
 
     public static class Builder {
 
-        private String queueName;
+        private final String queueName;
         // RequestAnswer.
         private Consumer<Object> consumer = ignored -> {};
         //RequestTimeout
         private int timeout = 5;
         private TimeUnit timeUnit = TimeUnit.SECONDS;
         // Message
-        private Object payload;
+        private final Object payload;
 
-        public Builder payload(Object payload) {
-            this.payload = payload;
-            return this;
-        }
-
-        public Builder queueName(String queueName) {
+        public Builder(String queueName, Object payload) {
             this.queueName = queueName;
-            return this;
+            this.payload = payload;
         }
 
         public Builder timeout(int timeout) {
