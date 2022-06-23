@@ -6,7 +6,7 @@ Lightweight API which simplifies communication between two separate entities.
 <dependency>
     <groupId>fr.playfull.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
-    <version>2.1.0</version>
+    <version>3.0.0</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -25,49 +25,35 @@ RabbitMQAPI.hook(String filePath);
 The request can be created using the inner class [RequestBuilder](src/main/java/fr/playfull/rmq/query/Request.java).
 You do not have to provide all the elements that the Builder contains. Nevertheless, some of them are crucial to the correct working of the API.
 
-A builder can be created by using the static access `Request.Builder<>()`. It contains a lot of parameters that can be filled in.
+A builder can be created by using the static access `Request.Builder()`. It contains a lot of parameters that can be filled in.
 
 ### Parameters
 
 ```java
-Builder<T> message(String message)
+Builder payload(Object payload)
 ```
-**Must be filled !** Allows you to set the message that will be sent through the queue.
+**Must be filled !** Allows you to set the payload (message) that will be sent through the queue.
 
 ```java
-Builder<T> queueName(String queueName)
+Builder queueName(String queueName)
 ```
 **Must be filled !** Allows you to set the queue name.
 
 ```java
-Builder<T> type(Class<T> type)
-```
-**Must be filled for RPC !** Allows you to set the type of data you shall receive as an answer to your RPC message.
-
-```java
-Builder<T> extra(String extra)
-```
-Allows you to add an extra information (e.g a specific username)
-
-```java
-Builder<T> marshal(RMQMarshal<?> marshal)
-```
-Allows you to define a custom marshal that will be used for serializing/deserializing the data.
-
-```java
-Builder<T> timeout(int timeout)
+Builder timeout(int timeout)
 ```
 Allows you to define a custom timeout duration. The timeout matches to the duration after which the waiting consumer will die if you don't receive any data. Is needed only for **RPC**.
 
 ```java
-Builder<T> timeUnit(TimeUnit timeUnit)
+Builder timeUnit(TimeUnit timeUnit)
 ```
 Allows you to set the TimeUnit for the timeout (SECONDS, ...). Is needed only for **RPC**.
 
 ```java
-Builder<T> await(Consumer<T> consumer)
+Builder await(Consumer<Object> consumer)
 ```
-Allows you to perform actions on the data once you received it. Is needed only for **RPC**.
+Allows you to perform actions on the data once you received it. Is needed only for **RPC**. 
+*You can cast the data if needed.*
 
 
 ## Sending/Receiving the request
@@ -75,16 +61,60 @@ Allows you to perform actions on the data once you received it. Is needed only f
 ### Sending a build request
 To send a request, you can do as following :
 ```java
-RabbitMQAPI.getForwarder().send(ProtocolType protocolType, Request<?> request);
+RabbitMQAPI.getForwarder().send(ProtocolType protocolType, Request request);
 ```
-When you receive an answer
+
 
 To listen to a specific queue :
 ```java
-RabbitMQAPI.getForwarder().send(ProtocolType protocolType, String queueName, RMQMarshal marshal);
+RabbitMQAPI.getForwarder().send(ProtocolType protocolType, String queueName);
 ```
-If you do not want to provide a specific marshal, you can use the default marshal : `RMQMarshal.DEFAULT_MARSHAL`
 
+
+### Passing objects dynamically
+You can now transfer objects through your queue. Nevertheless, every object must respect some rules to be able 
+to be transferred. We will make for example an Account class :
+
+```java
+public class Account implements RMQSerializable {
+
+    private final String name;
+    private final int age;
+
+    public Account(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+}
+```
+As you can see, the class must implement the `RMQSerializable` interface.
+
+#### Registering
+To register your new object as serializable, you also need to provide a `SerializableFactory`
+interface :
+
+```java
+public class AccountFactory implements SerializableFactory<Account> {
+    
+    @Override
+    public Account create(Map<String, Object> data) {
+        return new Account((String)data.get("name"), (int)data.get("age"));
+    }
+    
+}
+```
+**The `data` map keys are the same as your class field names.**
+
+#### Registering the factory
+Finally, you need to register your factory as following :
+```java
+RabbitMQAPI.getBufferManager().addFactory(Account.class, new AccountFactory());
+```
 
 ## Event system
 

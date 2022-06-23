@@ -9,10 +9,9 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
-public class RPCClientProtocol extends ClientProtocol {
+public class RPCClient extends Client {
 
     @Override
     public void send(Request request) {
@@ -29,27 +28,16 @@ public class RPCClientProtocol extends ClientProtocol {
                         .deliveryMode(1)
                         .build();
 
-                StringBuilder requestBuilder = new StringBuilder();
-                requestBuilder.append(request.getRequestMessage().getMessage());
-
-                // If there is an extra
-                if (request.getRequestMessage().getExtra() != null && !request.getRequestMessage().getExtra().isEmpty())
-                    requestBuilder.append(":").append(request.getRequestMessage().getExtra());
-
                 // We publish our request data
-                channel.basicPublish("", request.getQueue(), properties, requestBuilder.toString().getBytes());
+                channel.basicPublish("", request.getQueue(), properties, RabbitMQAPI.getBufferManager().serialize(request.getPayload()));
                 RabbitMQAPI.getLogger().info("[Client] Sending request in queue " + request.getQueue());
 
                 BlockingQueue<Object> response = new ArrayBlockingQueue<>(1);
 
                 String consumerTag = channel.basicConsume(replyQueueName, true, (cTag, delivery) -> {
                     if (delivery.getProperties().getCorrelationId().equals(correlationId)) {
-                        try {
-                            // We take the offer
-                            response.offer(request.getRequestMessage().getMarshal().deserialize(delivery.getBody()));
-                        } catch (ClassNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                        // We take the offer
+                        response.offer(RabbitMQAPI.getBufferManager().deserialize(delivery.getBody()));
                     }
                 }, cTag -> {
                 });
@@ -60,7 +48,7 @@ public class RPCClientProtocol extends ClientProtocol {
 
                 RabbitMQAPI.getLogger().info("[Client] Received answer in queue " + request.getQueue());
                 // We consume the answer
-                request.getRequestAnswer().getConsumer().accept(typeAdapter.get(request.getRequestAnswer().getType(), result));
+                request.getRequestAnswer().getConsumer().accept(result);
                 channel.close();
             } catch (IOException | InterruptedException | TimeoutException exception) {
                 RabbitMQAPI.getLogger().severe(exception.getMessage());

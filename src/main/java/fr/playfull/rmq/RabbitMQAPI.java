@@ -5,48 +5,49 @@ import fr.playfull.rmq.connect.Credentials;
 import fr.playfull.rmq.connect.DefaultConnector;
 import fr.playfull.rmq.event.EventBus;
 import fr.playfull.rmq.forward.Forwarder;
-import fr.playfull.rmq.io.DefaultFileReader;
-import fr.playfull.rmq.io.DefaultFileWriter;
+import fr.playfull.rmq.io.DefaultFileEditor;
+import fr.playfull.rmq.io.FileEditor;
+import fr.playfull.rmq.protocol.ProtocolBucket;
+import fr.playfull.rmq.protocol.ProtocolClientServerPair;
 import fr.playfull.rmq.protocol.ProtocolType;
+import fr.playfull.rmq.serializer.ByteSerializableBufferManager;
+import fr.playfull.rmq.serializer.DefaultByteSerializableBufferManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class RabbitMQAPI {
 
     private static final Logger LOGGER = Logger.getLogger("rmq-logger");
 
-    private static final Forwarder forwarder = new Forwarder();
+    private static Forwarder forwarder;
     private static final EventBus eventBus = new EventBus();
+    private static final ByteSerializableBufferManager bufferManager = new DefaultByteSerializableBufferManager();
 
     private RabbitMQAPI(String path) throws IOException {
+        // We manage the forwarder loading.
+        ProtocolBucket protocolBucket = new ProtocolBucket();
+        forwarder = new Forwarder(protocolBucket);
 
-        File file = new File(path, "credentials.yml");
+        // We manage the file creation.
+        FileEditor fileEditor = new DefaultFileEditor();
+        File createdFile = fileEditor.create(path, "credentials.yml");
+        Credentials credentials = fileEditor.read(createdFile);
 
-        // If the file does not exist
-        if(!file.exists()) {
-            // We build the directory.
-            new File(path).mkdirs();
-            // We build the file.
-            file.createNewFile();
-            // We write the default information.
-            new DefaultFileWriter().write(file);
-        }
-
-        // We read the file.
-        Credentials credentials = new DefaultFileReader().read(file);
+        // We manage the connection.
         Connector connector = new DefaultConnector();
-
-        for(ProtocolType protocolType : ProtocolType.values()) {
-            connector.connect(protocolType.getClientProtocol(), credentials);
-            connector.connect(protocolType.getServerProtocol(), credentials);
+        for(Map.Entry<ProtocolType, ProtocolClientServerPair> entry : protocolBucket.getProtocols().entrySet()) {
+            connector.connect(entry.getValue().server(), credentials);
+            connector.connect(entry.getValue().client(), credentials);
         }
 
         // We set the shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for(ProtocolType protocolType : ProtocolType.values())
-                connector.disconnect(protocolType.getServerProtocol());
+            for(Map.Entry<ProtocolType, ProtocolClientServerPair> entry : protocolBucket.getProtocols().entrySet()) {
+                connector.disconnect(entry.getValue().server());
+            }
         }));
     }
 
@@ -56,6 +57,10 @@ public class RabbitMQAPI {
 
     public static Logger getLogger() {
         return LOGGER;
+    }
+
+    public static ByteSerializableBufferManager getBufferManager() {
+        return bufferManager;
     }
 
     public static Forwarder getForwarder() {

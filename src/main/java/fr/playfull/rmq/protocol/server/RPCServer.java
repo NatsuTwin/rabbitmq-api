@@ -4,18 +4,17 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.DeliverCallback;
 import fr.playfull.rmq.RabbitMQAPI;
 import fr.playfull.rmq.event.protocol.RPCMessageReceivedEvent;
-import fr.playfull.rmq.marshal.RMQMarshal;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class RPCServerProtocol extends ServerProtocol {
+public class RPCServer extends Server {
 
     private RPCMessageReceivedEvent actualListenedEvent;
 
     @Override
-    public void listen(String queue, RMQMarshal marshal) {
+    public void listen(String queue) {
         getThreadPool().execute(() -> {
             try{
                 // We declare & purge our queue
@@ -24,7 +23,6 @@ public class RPCServerProtocol extends ServerProtocol {
                 getChannel().basicQos(0);
 
                 Object objectMonitor = new Object();
-                AtomicReference<Object> response = new AtomicReference<>();
 
                 DeliverCallback deliverCallback = (s, delivery) -> {
                     AMQP.BasicProperties properties = new AMQP.BasicProperties
@@ -34,16 +32,8 @@ public class RPCServerProtocol extends ServerProtocol {
 
                     try {
                         RabbitMQAPI.getLogger().info("[Server] Received request in queue " + queue);
-                        String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
 
-                        String extra = "";
-
-                        if(message.contains(":")) {
-                            extra = message.split(":")[1];
-                            message = message.split(":")[0];
-                        }
-
-                        this.actualListenedEvent = new RPCMessageReceivedEvent(queue, message, extra);
+                        this.actualListenedEvent = new RPCMessageReceivedEvent(queue, RabbitMQAPI.getBufferManager().deserialize(delivery.getBody()));
 
                         RabbitMQAPI.getEventBus().publish(actualListenedEvent);
                     } catch(RuntimeException runtimeException) {
@@ -51,32 +41,21 @@ public class RPCServerProtocol extends ServerProtocol {
                     } finally {
                         // We serialize our object and publish it
                         actualListenedEvent.getCallback().thenAccept(answer -> {
-                            response.set(answer);
-                            try {
-                                RabbitMQAPI.getLogger().info("[Server] Sending answer in queue " + queue);
-                                getChannel().basicPublish("", delivery.getProperties().getReplyTo(), properties, marshal.serialize(response.get()));
-                                getChannel().basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                            } catch (IOException exception) {
-                                exception.printStackTrace();
-                            }
+                           try {
+                               RabbitMQAPI.getLogger().info("[Server] Sending answer in queue " + queue);
+                               getChannel().basicPublish("", delivery.getProperties().getReplyTo(), properties, RabbitMQAPI.getBufferManager().serialize(answer));
+                               getChannel().basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                               synchronized(objectMonitor){
+                                   objectMonitor.notify();
+                               }
+                           } catch(IOException exception) {
+                               exception.printStackTrace();
+                           }
                         });
-                        synchronized(objectMonitor){
-                            objectMonitor.notify();
-                        }
                     }
                 };
 
                 getChannel().basicConsume(queue, false, deliverCallback, consumerTag -> {});
-
-                while(true) {
-                    synchronized (objectMonitor) {
-                        try {
-                            objectMonitor.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
             } catch (IOException exception) {
                 exception.printStackTrace();
             }

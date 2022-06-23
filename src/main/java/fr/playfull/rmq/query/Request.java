@@ -1,22 +1,19 @@
 package fr.playfull.rmq.query;
 
-import fr.playfull.rmq.marshal.RMQMarshal;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class Request<T> {
+public class Request {
 
-    private final RequestAnswer<T> requestAnswer;
+    private final RequestAnswer requestAnswer;
     private final RequestTimeout requestTimeout;
-    private final RequestMessage requestMessage;
+    private final Object payload;
     private final String queueName;
 
-    private Request(Builder<T> builder) {
+    private Request(Builder builder) {
         this.queueName = builder.queueName;
 
-        this.requestAnswer = new RequestAnswer.Builder<T>()
-                .type(builder.tClass)
+        this.requestAnswer = new RequestAnswer.Builder()
                 .await(builder.consumer)
                 .build();
 
@@ -25,18 +22,14 @@ public class Request<T> {
                 .timeUnit(builder.timeUnit)
                 .build();
 
-        this.requestMessage = new RequestMessage.Builder()
-                .message(builder.message)
-                .extra(builder.extra)
-                .marshal(builder.marshal)
-                .build();
+        this.payload = builder.payload;
     }
 
     public String getQueue() {
         return this.queueName;
     }
 
-    public RequestAnswer<T> getRequestAnswer() {
+    public RequestAnswer getRequestAnswer() {
         return requestAnswer;
     }
 
@@ -44,66 +37,48 @@ public class Request<T> {
         return requestTimeout;
     }
 
-    public RequestMessage getRequestMessage() {
-        return this.requestMessage;
+    public Object getPayload() {
+        return this.payload;
     }
 
-    public static class Builder<T> {
+    public static class Builder {
 
         private String queueName;
         // RequestAnswer.
-        private Consumer<T> consumer = ignored -> {};
-        private Class<T> tClass = (Class<T>) Object.class;
+        private Consumer<Object> consumer = ignored -> {};
         //RequestTimeout
         private int timeout = 5;
         private TimeUnit timeUnit = TimeUnit.SECONDS;
-        // RequestMessage
-        private RMQMarshal<?> marshal = RMQMarshal.DEFAULT_MARSHAL;
-        private String message;
-        private String extra = "";
+        // Message
+        private Object payload;
 
-        public Builder<T> message(String message) {
-            this.message = message;
+        public Builder payload(Object payload) {
+            this.payload = payload;
             return this;
         }
 
-        public Builder<T> queueName(String queueName) {
+        public Builder queueName(String queueName) {
             this.queueName = queueName;
             return this;
         }
 
-        public Builder<T> extra(String extra) {
-            this.extra = extra;
-            return this;
-        }
-
-        public Builder<T> marshal(RMQMarshal<?> marshal) {
-            this.marshal = marshal;
-            return this;
-        }
-
-        public Builder<T> timeout(int timeout) {
+        public Builder timeout(int timeout) {
             this.timeout = timeout;
             return this;
         }
 
-        public Builder<T> timeUnit(TimeUnit timeUnit) {
+        public Builder timeUnit(TimeUnit timeUnit) {
             this.timeUnit = timeUnit;
             return this;
         }
 
-        public Builder<T> type(Class<T> tClass) {
-            this.tClass = tClass;
-            return this;
-        }
-
-        public Builder<T> await(Consumer<T> consumer) {
+        public Builder await(Consumer<Object> consumer) {
             this.consumer = consumer;
             return this;
         }
 
-        public Request<T> build() {
-            return new Request<>(this);
+        public Request build() {
+            return new Request(this);
         }
     }
 

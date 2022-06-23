@@ -3,14 +3,13 @@ package fr.playfull.rmq.protocol.server;
 import com.rabbitmq.client.DeliverCallback;
 import fr.playfull.rmq.RabbitMQAPI;
 import fr.playfull.rmq.event.protocol.TCPMessageReceivedEvent;
-import fr.playfull.rmq.marshal.RMQMarshal;
 
 import java.io.IOException;
 
-public class TCPServerProtocol extends ServerProtocol {
+public class TCPServer extends Server {
 
     @Override
-    public void listen(String queue, RMQMarshal marshal) {
+    public void listen(String queue) {
         getThreadPool().execute(() -> {
             try {
 
@@ -21,14 +20,9 @@ public class TCPServerProtocol extends ServerProtocol {
 
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                     RabbitMQAPI.getLogger().info("[Server TCP] Received message in queue " + queue);
-                    String message = new String(delivery.getBody(), "UTF-8");
-                    String extra = "";
-                    if(message.contains(":")) {
-                        extra = message.split(":")[1];
-                        message = message.split(":")[0];
-                    }
+
                     // We publish the event.
-                    TCPMessageReceivedEvent messageReceivedEvent = new TCPMessageReceivedEvent(queue, message, extra);
+                    TCPMessageReceivedEvent messageReceivedEvent = new TCPMessageReceivedEvent(queue, RabbitMQAPI.getBufferManager().deserialize(delivery.getBody()));
                     RabbitMQAPI.getEventBus().publish(messageReceivedEvent);
                 };
                 getChannel().basicConsume(queue, true, deliverCallback, consumerTag -> { });

@@ -2,42 +2,30 @@ package fr.playfull.rmq.query;
 
 import java.util.function.Consumer;
 
-public class RequestAnswer<T> implements RequestComponent {
+public class RequestAnswer implements RequestComponent {
 
-    private final Consumer<T> tConsumer;
-    private final Class<T> tClass;
+    private final Consumer<Object> consumer;
 
-    private RequestAnswer(Builder<T> thisBuilder) {
-        this.tConsumer = thisBuilder.tConsumer;
-        this.tClass = thisBuilder.tClass;
+    private RequestAnswer(Builder thisBuilder) {
+        this.consumer = thisBuilder.tConsumer;
     }
 
-    public Consumer<T> getConsumer() {
-        return tConsumer;
+    public Consumer<Object> getConsumer() {
+        return this.consumer;
     }
 
-    public Class<T> getType() {
-        return tClass;
-    }
+    protected static class Builder implements RequestComponent.Builder {
 
-    protected static class Builder<T> implements RequestComponent.Builder {
+        private Consumer<Object> tConsumer = ignored -> {};
 
-        private Class<T> tClass = (Class<T>) Object.class;
-        private Consumer<T> tConsumer = ignored -> {};
-
-        public Builder<T> await(Consumer<T> tConsumer) {
+        public Builder await(Consumer<Object> tConsumer) {
             this.tConsumer = tConsumer;
             return this;
         }
 
-        public Builder<T> type(Class<T> tClass) {
-            this.tClass = tClass;
-            return this;
-        }
-
         @Override
-        public RequestAnswer<T> build() {
-            return new RequestAnswer<>(this);
+        public RequestAnswer build() {
+            return new RequestAnswer(this);
         }
 
     }

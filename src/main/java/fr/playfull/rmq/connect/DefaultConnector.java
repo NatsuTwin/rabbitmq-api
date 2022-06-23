@@ -1,7 +1,7 @@
 package fr.playfull.rmq.connect;
 
 import fr.playfull.rmq.protocol.Protocol;
-import fr.playfull.rmq.protocol.server.ServerProtocol;
+import fr.playfull.rmq.protocol.server.Server;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -14,7 +14,7 @@ public final class DefaultConnector implements Connector {
     }
 
     @Override
-    public void disconnect(ServerProtocol protocol) {
+    public void disconnect(Server protocol) {
         try {
             if(protocol.getChannel().isOpen()) {
                 protocol.getChannel().close();

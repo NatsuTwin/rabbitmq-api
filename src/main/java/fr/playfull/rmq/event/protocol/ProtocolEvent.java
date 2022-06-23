@@ -5,15 +5,13 @@ import fr.playfull.rmq.protocol.ProtocolType;
 public abstract class ProtocolEvent {
 
     private final ProtocolType protocolType;
-    private final String message;
+    private final Object payload;
     private final String queueName;
-    private final String extra;
 
-    public ProtocolEvent(ProtocolType protocolType, String queueName, String message, String extra){
+    public ProtocolEvent(ProtocolType protocolType, String queueName, Object payload){
         this.protocolType = protocolType;
         this.queueName = queueName;
-        this.message = message;
-        this.extra = extra;
+        this.payload = payload;
     }
 
     public ProtocolType getProtocolType() {
@@ -24,12 +22,8 @@ public abstract class ProtocolEvent {
         return this.queueName;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public String getExtra() {
-        return extra;
+    public Object getPayload() {
+        return payload;
     }
 
 }
