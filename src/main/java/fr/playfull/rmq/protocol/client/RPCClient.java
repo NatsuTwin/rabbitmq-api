@@ -3,6 +3,7 @@ package fr.playfull.rmq.protocol.client;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import fr.playfull.rmq.RabbitMQAPI;
+import fr.playfull.rmq.query.RPCRequest;
 import fr.playfull.rmq.query.Request;
 
 import java.io.IOException;
@@ -18,6 +19,11 @@ public class RPCClient extends Client {
         getThreadPool().execute(() -> {
             try {
                 Channel channel = getConnection().createChannel();
+
+                // If the request is not a RPC request
+                if(!(request instanceof RPCRequest rpcRequest))
+                    return;
+
                 String correlationId = UUID.randomUUID().toString();
 
                 String replyQueueName = channel.queueDeclare().getQueue();
@@ -43,12 +49,12 @@ public class RPCClient extends Client {
                 });
 
                 // We take the result
-                Object result = response.poll(request.getRequestTimeout().getTimeout(), request.getRequestTimeout().getTimeUnit());
+                Object result = response.poll(rpcRequest.getRequestTimeout().getTimeout(), rpcRequest.getRequestTimeout().getTimeUnit());
                 channel.basicCancel(consumerTag);
 
                 RabbitMQAPI.getLogger().info("[Client] Received answer in queue " + request.getQueue());
                 // We consume the answer
-                request.getRequestAnswer().getConsumer().accept(result);
+                rpcRequest.getRequestAnswer().getConsumer().accept(result);
                 channel.close();
             } catch (IOException | InterruptedException | TimeoutException exception) {
                 RabbitMQAPI.getLogger().severe(exception.getMessage());

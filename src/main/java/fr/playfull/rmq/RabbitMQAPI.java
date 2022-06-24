@@ -22,6 +22,7 @@ public class RabbitMQAPI {
 
     private static final Logger LOGGER = Logger.getLogger("rmq-logger");
 
+    private static Connector connector;
     private static Forwarder forwarder;
     private static final EventBus eventBus = new EventBus();
     private static final ByteSerializableBufferManager bufferManager = new DefaultByteSerializableBufferManager();
@@ -29,6 +30,7 @@ public class RabbitMQAPI {
     private RabbitMQAPI(String path) throws IOException {
         // We manage the forwarder loading.
         ProtocolBucket protocolBucket = new ProtocolBucket();
+        connector = new DefaultConnector(protocolBucket);
         forwarder = new Forwarder(protocolBucket);
 
         // We manage the file creation.
@@ -37,18 +39,10 @@ public class RabbitMQAPI {
         Credentials credentials = fileEditor.read(createdFile);
 
         // We manage the connection.
-        Connector connector = new DefaultConnector();
-        for(Map.Entry<ProtocolType, ProtocolClientServerPair> entry : protocolBucket.getProtocols().entrySet()) {
-            connector.connect(entry.getValue().server(), credentials);
-            connector.connect(entry.getValue().client(), credentials);
-        }
+        connector.connectAll(credentials);
 
         // We set the shutdown hook
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for(Map.Entry<ProtocolType, ProtocolClientServerPair> entry : protocolBucket.getProtocols().entrySet()) {
-                connector.disconnect(entry.getValue().server());
-            }
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(connector::disconnectAll));
     }
 
     public static RabbitMQAPI hook(String path) throws IOException {
@@ -71,4 +65,7 @@ public class RabbitMQAPI {
         return eventBus;
     }
 
+    public static Connector getConnector() {
+        return connector;
+    }
 }
