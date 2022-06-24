@@ -6,12 +6,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public abstract class Request {
+
+    private final ProtocolType protocolType;
     private final Object payload;
     private final String queueName;
 
     protected Request(Builder builder) {
+        this.protocolType = builder.protocolType;
         this.queueName = builder.queueName;
         this.payload = builder.payload;
+    }
+
+    public ProtocolType getType() {
+        return this.protocolType;
     }
 
     public String getQueue() {
@@ -32,7 +39,7 @@ public abstract class Request {
         protected TimeUnit timeUnit = TimeUnit.SECONDS;
         // Message
         protected Object payload = "DEFAULT_PAYLOAD";
-        private final ProtocolType protocolType;
+        protected final ProtocolType protocolType;
 
         public Builder(ProtocolType protocolType) {
             this.protocolType = protocolType;

@@ -11,8 +11,8 @@ public class Forwarder {
         this.protocolBucket = protocolBucket;
     }
 
-    public void send(ProtocolType protocolType, Request request) {
-        protocolBucket.getClientServerPairOf(protocolType).client().send(request);
+    public void send(Request request) {
+        protocolBucket.getClientServerPairOf(request.getType()).client().send(request);
     }
 
     public void listen(ProtocolType protocolType, String queueName) {

@@ -6,7 +6,7 @@ Lightweight API which simplifies communication between two separate entities.
 <dependency>
     <groupId>fr.playfull.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
-    <version>3.2.0</version>
+    <version>3.2.1</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -25,7 +25,7 @@ RabbitMQAPI.hook(String filePath);
 The request can be created using the inner class [RequestBuilder](src/main/java/fr/playfull/rmq/query/Request.java).
 You do not have to provide all the elements that the Builder contains. Nevertheless, some of them are crucial to the correct working of the API.
 
-A builder can be created by using the static access `Request.Builder()`. It contains a lot of parameters that can be filled in.
+A builder can be created by using the static access `Request.Builder(ProtocolType protocolType)`. It contains a lot of parameters that can be filled in.
 
 ### Parameters
 
@@ -61,7 +61,7 @@ Allows you to perform actions on the data once you received it. Is needed only f
 ### Sending a build request
 To send a request, you can do as following :
 ```java
-RabbitMQAPI.getForwarder().send(ProtocolType protocolType, Request request);
+RabbitMQAPI.getForwarder().send(Request request);
 ```
 
 

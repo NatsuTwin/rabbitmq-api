@@ -4,7 +4,6 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import fr.playfull.rmq.RabbitMQAPI;
 import fr.playfull.rmq.connect.Credentials;
-import fr.playfull.rmq.exception.BadCredentialsException;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -29,7 +28,8 @@ public abstract class Protocol {
             this.connection = connectionFactory.newConnection();
             RabbitMQAPI.getLogger().info("Established connection with RabbitMQ !");
         } catch (IOException | TimeoutException exception) {
-            throw new BadCredentialsException("Bad credentials provided ! Please fill correctly credentials.yml's file information.");
+            RabbitMQAPI.getLogger().info("Bad credentials provided ! Please fill correctly the credentials file.");
+            System.exit(-1);
         }
     }
 
