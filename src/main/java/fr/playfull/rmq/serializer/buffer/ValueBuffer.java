@@ -29,7 +29,6 @@ public interface ValueBuffer<T> {
      */
     T read(SerializableFactory serializableFactory, ObjectMarshal objectMarshal, byte[] bytes);
 
-
     default byte[] getBytesAndId(byte[] bytes, int id) {
         byte[] joinedArray = Arrays.copyOf(new byte[] {(byte)id}, bytes.length + 1);
         System.arraycopy(bytes, 0, joinedArray, 1, bytes.length);

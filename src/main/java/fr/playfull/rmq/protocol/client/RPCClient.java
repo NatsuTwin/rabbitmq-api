@@ -17,8 +17,8 @@ public class RPCClient extends Client {
     @Override
     public void send(Request request) {
         getThreadPool().execute(() -> {
+            Thread.currentThread().setName("rpc-client-thread" + UUID.randomUUID());
             try {
-                Channel channel = getConnection().createChannel();
 
                 // If the request is not a RPC request
                 if(!(request instanceof RPCRequest rpcRequest))
@@ -26,7 +26,7 @@ public class RPCClient extends Client {
 
                 String correlationId = UUID.randomUUID().toString();
 
-                String replyQueueName = channel.queueDeclare().getQueue();
+                String replyQueueName = getChannel().queueDeclare().getQueue();
                 AMQP.BasicProperties properties = new AMQP.BasicProperties
                         .Builder()
                         .correlationId(correlationId)
@@ -35,12 +35,12 @@ public class RPCClient extends Client {
                         .build();
 
                 // We publish our request data
-                channel.basicPublish("", request.getQueue(), properties, RabbitMQAPI.getBufferManager().serialize(request.getPayload()));
+                getChannel().basicPublish("", request.getQueue(), properties, RabbitMQAPI.getBufferManager().serialize(request.getPayload()));
                 RabbitMQAPI.getLogger().info("[Client] Sending request in queue " + request.getQueue());
 
                 BlockingQueue<Object> response = new ArrayBlockingQueue<>(1);
 
-                String consumerTag = channel.basicConsume(replyQueueName, true, (cTag, delivery) -> {
+                String consumerTag = getChannel().basicConsume(replyQueueName, true, (cTag, delivery) -> {
                     if (delivery.getProperties().getCorrelationId().equals(correlationId)) {
                         // We take the offer
                         response.offer(RabbitMQAPI.getBufferManager().deserialize(delivery.getBody()));
@@ -50,13 +50,12 @@ public class RPCClient extends Client {
 
                 // We take the result
                 Object result = response.poll(rpcRequest.getRequestTimeout().getTimeout(), rpcRequest.getRequestTimeout().getTimeUnit());
-                channel.basicCancel(consumerTag);
+                getChannel().basicCancel(consumerTag);
 
                 RabbitMQAPI.getLogger().info("[Client] Received answer in queue " + request.getQueue());
                 // We consume the answer
                 rpcRequest.getRequestAnswer().getConsumer().accept(result);
-                channel.close();
-            } catch (IOException | InterruptedException | TimeoutException exception) {
+            } catch (IOException | InterruptedException exception) {
                 RabbitMQAPI.getLogger().severe(exception.getMessage());
             }
         });

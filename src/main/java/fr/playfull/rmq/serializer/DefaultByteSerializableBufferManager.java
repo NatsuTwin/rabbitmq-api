@@ -27,6 +27,7 @@ public class DefaultByteSerializableBufferManager implements ByteSerializableBuf
         bufferMap.put(String.class, new StringBuffer());
         bufferMap.put(Integer.class, new IntegerBuffer());
         bufferMap.put(Map.class, new MapBuffer());
+        bufferMap.put(HashMap.class, new MapBuffer());
         bufferMap.put(Double.class, new DoubleBuffer());
         bufferMap.put(Long.class, new LongBuffer());
         bufferMap.put(Float.class, new FloatBuffer());

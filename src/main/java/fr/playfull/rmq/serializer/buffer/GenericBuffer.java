@@ -1,6 +1,5 @@
 package fr.playfull.rmq.serializer.buffer;
 
-import com.google.gson.Gson;
 import fr.playfull.rmq.serializer.ObjectMarshal;
 import fr.playfull.rmq.serializer.RMQSerializable;
 import fr.playfull.rmq.serializer.entity.ValueWrapper;
@@ -10,7 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class GenericBuffer implements ValueBuffer<RMQSerializable> {
-
 
     @Override
     public byte[] transform(int id, ValueWrapper<RMQSerializable> valueWrapper) {

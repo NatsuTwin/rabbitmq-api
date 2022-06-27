@@ -13,6 +13,7 @@ public class DefaultObjectMarshal implements ObjectMarshal {
     private final Map<Class<?>, ValueWrapperMarshal<?>> marshalMap = new HashMap<>();
     public DefaultObjectMarshal() {
         this.marshalMap.put(Integer.class, new IntegerValueMarshal());
+        this.marshalMap.put(HashMap.class, new MapValueMarshal());
         this.marshalMap.put(Map.class, new MapValueMarshal());
         this.marshalMap.put(String.class, new StringValueMarshal());
         this.marshalMap.put(RMQSerializable.class, new GenericValueMarshal());

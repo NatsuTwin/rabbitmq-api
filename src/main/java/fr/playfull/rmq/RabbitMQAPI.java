@@ -8,14 +8,13 @@ import fr.playfull.rmq.forward.Forwarder;
 import fr.playfull.rmq.io.DefaultFileEditor;
 import fr.playfull.rmq.io.FileEditor;
 import fr.playfull.rmq.protocol.ProtocolBucket;
-import fr.playfull.rmq.protocol.ProtocolClientServerPair;
-import fr.playfull.rmq.protocol.ProtocolType;
 import fr.playfull.rmq.serializer.ByteSerializableBufferManager;
 import fr.playfull.rmq.serializer.DefaultByteSerializableBufferManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 public class RabbitMQAPI {

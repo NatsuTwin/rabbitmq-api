@@ -5,7 +5,6 @@ import fr.playfull.rmq.query.Request;
 
 public abstract class Client extends Protocol {
 
-
     public abstract void send(Request request);
 
 }

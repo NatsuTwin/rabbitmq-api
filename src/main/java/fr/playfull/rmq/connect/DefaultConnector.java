@@ -3,6 +3,7 @@ package fr.playfull.rmq.connect;
 import fr.playfull.rmq.protocol.ProtocolBucket;
 import fr.playfull.rmq.protocol.ProtocolClientServerPair;
 import fr.playfull.rmq.protocol.ProtocolType;
+import fr.playfull.rmq.protocol.client.Client;
 import fr.playfull.rmq.protocol.server.Server;
 
 import java.io.IOException;
@@ -28,11 +29,18 @@ public final class DefaultConnector implements Connector {
     public void disconnectAll() {
         for(Map.Entry<ProtocolType, ProtocolClientServerPair> entry : protocolBucket.getProtocols().entrySet()) {
             Server server = entry.getValue().server();
+            Client client = entry.getValue().client();
 
             try {
-                if(server.getChannel().isOpen()) {
+                if(client.getConnection().isOpen())
+                    client.getConnection().close();
+                if(client.getChannel().isOpen())
+                    client.getChannel().close();
+
+                if(server.getConnection().isOpen())
+                    server.getConnection().close();
+                if(server.getChannel().isOpen())
                     server.getChannel().close();
-                }
             } catch(IOException | TimeoutException ioException) {
                 ioException.printStackTrace();
             }

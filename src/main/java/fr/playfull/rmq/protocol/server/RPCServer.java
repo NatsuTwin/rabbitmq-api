@@ -7,6 +7,7 @@ import fr.playfull.rmq.event.protocol.RPCMessageReceivedEvent;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RPCServer extends Server {
@@ -16,6 +17,7 @@ public class RPCServer extends Server {
     @Override
     public void listen(String queue) {
         getThreadPool().execute(() -> {
+            Thread.currentThread().setName("rpc-server-thread" + UUID.randomUUID());
             try{
                 // We declare & purge our queue
                 getChannel().queueDeclare(queue, false, false, false, null);
@@ -25,17 +27,21 @@ public class RPCServer extends Server {
                 Object objectMonitor = new Object();
 
                 DeliverCallback deliverCallback = (s, delivery) -> {
+                    System.out.println("RPC Threads 1 : " + Thread.activeCount());
                     AMQP.BasicProperties properties = new AMQP.BasicProperties
                             .Builder()
                             .correlationId(delivery.getProperties().getCorrelationId())
                             .build();
 
+                    System.out.println("RPC Threads 2 : " + Thread.activeCount());
                     try {
+                        System.out.println("RPC Threads 3 : " + Thread.activeCount());
                         RabbitMQAPI.getLogger().info("[Server] Received request in queue " + queue);
-
+                        System.out.println("RPC Threads 4 : " + Thread.activeCount());
                         this.actualListenedEvent = new RPCMessageReceivedEvent(queue, RabbitMQAPI.getBufferManager().deserialize(delivery.getBody()));
-
+                        System.out.println("RPC Threads 5 : " + Thread.activeCount());
                         RabbitMQAPI.getEventBus().publish(actualListenedEvent);
+                        System.out.println("RPC Threads 6 : " + Thread.activeCount());
                     } catch(RuntimeException runtimeException) {
                         runtimeException.printStackTrace();
                     } finally {

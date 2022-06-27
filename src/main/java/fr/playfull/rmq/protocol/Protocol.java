@@ -1,7 +1,9 @@
 package fr.playfull.rmq.protocol;
 
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.impl.nio.NioParams;
 import fr.playfull.rmq.RabbitMQAPI;
 import fr.playfull.rmq.connect.Credentials;
 
@@ -13,7 +15,12 @@ import java.util.concurrent.TimeoutException;
 public abstract class Protocol {
 
     private Connection connection;
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
+    private final ExecutorService threadPool;
+    private Channel channel;
+
+    public Protocol() {
+        this.threadPool = Executors.newFixedThreadPool(2);
+    }
 
     public void connect(Credentials credentials) {
         ConnectionFactory connectionFactory = new ConnectionFactory();
@@ -26,16 +33,24 @@ public abstract class Protocol {
 
         try {
             this.connection = connectionFactory.newConnection();
+            this.channel = connection.createChannel();
             RabbitMQAPI.getLogger().info("Established connection with RabbitMQ !");
         } catch (IOException | TimeoutException exception) {
-            RabbitMQAPI.getLogger().info("Bad credentials provided ! Please fill correctly the credentials file.");
+            RabbitMQAPI.getLogger().severe("Bad credentials provided ! Please fill correctly the credentials file.");
             System.exit(-1);
         }
     }
 
-    protected Connection getConnection() {
+    public Connection getConnection() {
         return this.connection;
     }
 
-    protected ExecutorService getThreadPool() { return this.threadPool; }
+    public Channel getChannel() {
+        return this.channel;
+    }
+
+    protected ExecutorService getThreadPool() {
+        return this.threadPool;
+    }
+
 }
