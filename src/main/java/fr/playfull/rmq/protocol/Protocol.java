@@ -32,7 +32,7 @@ public abstract class Protocol {
         connectionFactory.setRequestedHeartbeat(2);
 
         try {
-            this.connection = connectionFactory.newConnection();
+            this.connection = connectionFactory.newConnection(this.threadPool);
             this.channel = connection.createChannel();
             RabbitMQAPI.getLogger().info("Established connection with RabbitMQ !");
         } catch (IOException | TimeoutException exception) {
