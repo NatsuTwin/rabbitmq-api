@@ -27,21 +27,15 @@ public class RPCServer extends Server {
                 Object objectMonitor = new Object();
 
                 DeliverCallback deliverCallback = (s, delivery) -> {
-                    System.out.println("RPC Threads 1 : " + Thread.activeCount());
                     AMQP.BasicProperties properties = new AMQP.BasicProperties
                             .Builder()
                             .correlationId(delivery.getProperties().getCorrelationId())
                             .build();
 
-                    System.out.println("RPC Threads 2 : " + Thread.activeCount());
                     try {
-                        System.out.println("RPC Threads 3 : " + Thread.activeCount());
                         RabbitMQAPI.getLogger().info("[Server] Received request in queue " + queue);
-                        System.out.println("RPC Threads 4 : " + Thread.activeCount());
                         this.actualListenedEvent = new RPCMessageReceivedEvent(queue, RabbitMQAPI.getBufferManager().deserialize(delivery.getBody()));
-                        System.out.println("RPC Threads 5 : " + Thread.activeCount());
                         RabbitMQAPI.getEventBus().publish(actualListenedEvent);
-                        System.out.println("RPC Threads 6 : " + Thread.activeCount());
                     } catch(RuntimeException runtimeException) {
                         runtimeException.printStackTrace();
                     } finally {
