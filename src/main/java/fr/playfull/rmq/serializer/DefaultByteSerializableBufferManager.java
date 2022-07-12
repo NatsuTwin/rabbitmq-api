@@ -8,6 +8,7 @@ import fr.playfull.rmq.serializer.factory.SerializableFactory;
 import fr.playfull.rmq.serializer.marshal.GenericValueMarshal;
 import fr.playfull.rmq.serializer.marshal.ValueWrapperMarshal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class DefaultByteSerializableBufferManager implements ByteSerializableBuf
         bufferMap.put(Double.class, new DoubleBuffer());
         bufferMap.put(Long.class, new LongBuffer());
         bufferMap.put(Float.class, new FloatBuffer());
-        bufferMap.put(List.class, new ListBuffer());
+        bufferMap.put(ArrayList.class, new ListBuffer());
         bufferMap.put(Boolean.class, new BooleanBuffer());
         bufferMap.put(RMQSerializable.class, genericBuffer);
 

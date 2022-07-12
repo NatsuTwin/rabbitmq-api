@@ -13,18 +13,16 @@ import fr.playfull.rmq.serializer.DefaultByteSerializableBufferManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 public class RabbitMQAPI {
 
-    private static final Logger LOGGER = Logger.getLogger("rmq-logger");
+    private static Logger LOGGER = Logger.getLogger("rmq-logger");
 
     private static Connector connector;
     private static Forwarder forwarder;
     private static final EventBus eventBus = new EventBus();
-    private static final ByteSerializableBufferManager bufferManager = new DefaultByteSerializableBufferManager();
+   private static final ByteSerializableBufferManager bufferManager = new DefaultByteSerializableBufferManager();
 
     private RabbitMQAPI(String path) throws IOException {
         // We manage the forwarder loading.
@@ -36,6 +34,7 @@ public class RabbitMQAPI {
         FileEditor fileEditor = new DefaultFileEditor();
         File createdFile = fileEditor.create(path, "credentials.yml");
         Credentials credentials = fileEditor.read(createdFile);
+
 
         // We manage the connection.
         connector.connectAll(credentials);

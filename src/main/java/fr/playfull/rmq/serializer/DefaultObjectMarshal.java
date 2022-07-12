@@ -4,6 +4,7 @@ import fr.playfull.rmq.serializer.marshal.*;
 import fr.playfull.rmq.serializer.entity.ValueWrapper;
 import fr.playfull.rmq.serializer.marshal.primitive.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class DefaultObjectMarshal implements ObjectMarshal {
         this.marshalMap.put(Double.class, new DoubleValueMarshal());
         this.marshalMap.put(Float.class, new FloatValueMarshal());
         this.marshalMap.put(Long.class, new LongValueMarshal());
-        this.marshalMap.put(List.class, new ListValueMarshal());
+        this.marshalMap.put(ArrayList.class, new ListValueMarshal());
         this.marshalMap.put(Boolean.class, new BooleanValueMarshal());
     }
 

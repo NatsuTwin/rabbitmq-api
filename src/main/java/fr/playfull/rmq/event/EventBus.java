@@ -18,7 +18,7 @@ public class EventBus {
         for(Subscriber<?> subscriber : subscribers) {
             // If the subscriber is not listening to the correct event
             if(subscriber.eventClass() != event.getClass())
-                return;
+                continue;
             // We call the event for the subscriber
             ((Subscriber<E>)subscriber).protocolListener().on(event);
         }

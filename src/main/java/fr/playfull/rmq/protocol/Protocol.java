@@ -3,7 +3,6 @@ package fr.playfull.rmq.protocol;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.impl.nio.NioParams;
 import fr.playfull.rmq.RabbitMQAPI;
 import fr.playfull.rmq.connect.Credentials;
 
@@ -32,7 +31,7 @@ public abstract class Protocol {
         connectionFactory.setRequestedHeartbeat(2);
 
         try {
-            this.connection = connectionFactory.newConnection();
+            this.connection = connectionFactory.newConnection(this.threadPool);
             this.channel = connection.createChannel();
             RabbitMQAPI.getLogger().info("Established connection with RabbitMQ !");
         } catch (IOException | TimeoutException exception) {
