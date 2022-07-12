@@ -57,7 +57,7 @@ public class DefaultFileEditor implements FileEditor {
 
             return new Credentials((String)map.get("host"), (int)map.get("port"), (String)map.get("user"), (String)map.get("password"));
         } catch (IOException exception) {
-            RabbitMQAPI.getLogger().severe("Error occurred whilst trying to read the file : " + exception.getMessage());
+            RabbitMQAPI.getLogger().error("Error occurred whilst trying to read the file : " + exception.getMessage());
         }
 
         throw new NullPointerException("Could not read the file !");

@@ -68,7 +68,7 @@ public class RPCClient extends Client {
                     rpcRequest.getRequestAnswer().getConsumer().accept(result);
                 }
             } catch (IOException | InterruptedException exception) {
-                RabbitMQAPI.getLogger().severe(exception.getMessage());
+                RabbitMQAPI.getLogger().error(exception.getMessage());
                 // Notice the client that something wrong happened.
                 rpcRequest.getRequestTimeout().getConsumer().accept(true);
             }

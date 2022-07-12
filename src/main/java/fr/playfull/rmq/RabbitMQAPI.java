@@ -10,14 +10,15 @@ import fr.playfull.rmq.io.FileEditor;
 import fr.playfull.rmq.protocol.ProtocolBucket;
 import fr.playfull.rmq.serializer.ByteSerializableBufferManager;
 import fr.playfull.rmq.serializer.DefaultByteSerializableBufferManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public class RabbitMQAPI {
 
-    private static Logger LOGGER = Logger.getLogger("rmq-logger");
+    private static final Logger LOGGER = LoggerFactory.getLogger("rmq-logger");
 
     private static Connector connector;
     private static Forwarder forwarder;
