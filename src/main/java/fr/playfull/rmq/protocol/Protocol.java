@@ -18,7 +18,7 @@ public abstract class Protocol {
     private Channel channel;
 
     public Protocol() {
-        this.threadPool = Executors.newFixedThreadPool(2);
+        this.threadPool = Executors.newSingleThreadExecutor();
     }
 
     public void connect(Credentials credentials) {
