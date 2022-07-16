@@ -6,7 +6,7 @@ Lightweight API which simplifies communication between two separate entities.
 <dependency>
     <groupId>fr.playfull.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
-    <version>3.4.1</version>
+    <version>3.6.0</version>
     <scope>compile</scope>
 </dependency>
 ```
