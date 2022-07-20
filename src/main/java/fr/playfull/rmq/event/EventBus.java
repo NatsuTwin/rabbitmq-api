@@ -4,6 +4,7 @@ import fr.playfull.rmq.event.protocol.ProtocolEvent;
 import fr.playfull.rmq.event.protocol.ProtocolListener;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ForkJoinPool;
 
 public class EventBus {
 
@@ -20,7 +21,8 @@ public class EventBus {
             if(subscriber.eventClass() != event.getClass())
                 continue;
             // We call the event for the subscriber
-            ((Subscriber<E>)subscriber).protocolListener().on(event);
+            ForkJoinPool.commonPool().execute(() ->
+                    ((Subscriber<E>)subscriber).protocolListener().on(event));
         }
     }
 }
