@@ -21,8 +21,7 @@ public class EventBus {
             if(subscriber.eventClass() != event.getClass())
                 continue;
             // We call the event for the subscriber
-            ForkJoinPool.commonPool().execute(() ->
-                    ((Subscriber<E>)subscriber).protocolListener().on(event));
+            ((Subscriber<E>)subscriber).protocolListener().on(event);
         }
     }
 }

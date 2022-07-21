@@ -13,6 +13,7 @@ import fr.playfull.rmq.serializer.DefaultByteSerializableBufferManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
@@ -64,6 +65,7 @@ public class RabbitMQAPI {
         return eventBus;
     }
 
+    @Nullable
     public static Connector getConnector() {
         return connector;
     }
