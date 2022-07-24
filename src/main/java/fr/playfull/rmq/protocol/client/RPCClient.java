@@ -66,6 +66,7 @@ public class RPCClient extends Client {
                             RabbitMQAPI.getLogger().info("[Client] Received answer in queue " + request.getQueue() + " in " + duration + "ms.");
                             // We consume the answer
                             rpcRequest.getRequestAnswer().getConsumer().accept(result);
+                            rpcRequest.getRequestAnswer().getFuture().complete(request);
                         }
                     } catch (IOException | InterruptedException exception) {
                         RabbitMQAPI.getLogger().error(exception.getMessage());

@@ -5,6 +5,7 @@ import fr.playfull.rmq.protocol.ProtocolType;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -39,6 +40,8 @@ public abstract class Request {
         protected Consumer<Object> answerConsumer = ignored -> {};
         // Request timeout
         protected Consumer<Object> timeoutConsumer = ignored -> {};
+        // Future answer
+        protected CompletableFuture<Object> future = new CompletableFuture<>();
         //RequestTimeout
         protected int timeout = 5;
         protected TimeUnit timeUnit = TimeUnit.SECONDS;
@@ -77,6 +80,11 @@ public abstract class Request {
 
         public Builder await(@Nonnull Consumer<Object> consumer) {
             this.answerConsumer = Objects.requireNonNull(consumer);
+            return this;
+        }
+
+        public Builder future(@Nonnull CompletableFuture<Object> future) {
+            this.future = Objects.requireNonNull(future);
             return this;
         }
 
