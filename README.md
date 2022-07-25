@@ -6,7 +6,7 @@ Lightweight API which simplifies communication between two separate entities.
 <dependency>
     <groupId>fr.playfull.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
-    <version>3.6.0</version>
+    <version>3.7.3</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -53,6 +53,12 @@ Allows you to set the TimeUnit for the timeout (SECONDS, ...). Is needed only fo
 Builder await(Consumer<Object> consumer)
 ```
 Allows you to perform actions on the data once you received it. Is needed only for **RPC**. 
+*You can cast the data if needed.*
+
+```java
+Builder future(CompletableFuture<Object> future)
+```
+Allows you to perform on the data once you received it. Is only needed for **RPC**.
 *You can cast the data if needed.*
 
 
