@@ -62,11 +62,12 @@ public class RPCClient extends Client {
                             RabbitMQAPI.getLogger().info("[Client] " + request.getQueue() + " timed out in " + duration + "ms.");
                             // Notice the client that we timed out.
                             rpcRequest.getRequestTimeout().getConsumer().accept(true);
+                            rpcRequest.getRequestAnswer().getFuture().complete(null);
                         } else {
                             RabbitMQAPI.getLogger().info("[Client] Received answer in queue " + request.getQueue() + " in " + duration + "ms.");
                             // We consume the answer
                             rpcRequest.getRequestAnswer().getConsumer().accept(result);
-                            rpcRequest.getRequestAnswer().getFuture().complete(request);
+                            rpcRequest.getRequestAnswer().getFuture().complete(result);
                         }
                     } catch (IOException | InterruptedException exception) {
                         RabbitMQAPI.getLogger().error(exception.getMessage());
