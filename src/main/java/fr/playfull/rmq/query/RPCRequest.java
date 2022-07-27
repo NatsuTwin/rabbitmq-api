@@ -8,12 +8,14 @@ public class RPCRequest extends Request {
         super(builder);
 
         this.requestAnswer = new RequestAnswer.Builder()
-                .await(builder.consumer)
+                .await(builder.answerConsumer)
+                .future(builder.future)
                 .build();
 
         this.requestTimeout = new RequestTimeout.Builder()
                 .timeout(builder.timeout)
                 .timeUnit(builder.timeUnit)
+                .onTimeout(builder.timeoutConsumer)
                 .build();
     }
 

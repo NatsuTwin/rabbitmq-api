@@ -18,7 +18,7 @@ public abstract class Protocol {
     private Channel channel;
 
     public Protocol() {
-        this.threadPool = Executors.newFixedThreadPool(2);
+        this.threadPool = Executors.newSingleThreadExecutor();
     }
 
     public void connect(Credentials credentials) {
@@ -35,7 +35,7 @@ public abstract class Protocol {
             this.channel = connection.createChannel();
             RabbitMQAPI.getLogger().info("Established connection with RabbitMQ !");
         } catch (IOException | TimeoutException exception) {
-            RabbitMQAPI.getLogger().severe("Bad credentials provided ! Please fill correctly the credentials file.");
+            RabbitMQAPI.getLogger().error("Bad credentials provided ! Please fill correctly the credentials file.");
             System.exit(-1);
         }
     }

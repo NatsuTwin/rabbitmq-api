@@ -6,9 +6,7 @@ import fr.playfull.rmq.RabbitMQAPI;
 import fr.playfull.rmq.event.protocol.RPCMessageReceivedEvent;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class RPCServer extends Server {
 
@@ -22,7 +20,7 @@ public class RPCServer extends Server {
                 // We declare & purge our queue
                 getChannel().queueDeclare(queue, false, false, false, null);
                 getChannel().queuePurge(queue);
-                getChannel().basicQos(0);
+                getChannel().basicQos(1);
 
                 Object objectMonitor = new Object();
 
