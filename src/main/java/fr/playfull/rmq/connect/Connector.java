@@ -1,7 +1,9 @@
 package fr.playfull.rmq.connect;
 
-import fr.playfull.rmq.protocol.Protocol;
-import fr.playfull.rmq.protocol.server.Server;
+import fr.playfull.rmq.protocol.ProtocolType;
+import fr.playfull.rmq.protocol.Side;
+
+import java.util.concurrent.ExecutorService;
 
 public interface Connector {
 
@@ -10,4 +12,5 @@ public interface Connector {
     // The ClientProtocols already have their connection closed.
     void disconnectAll();
 
+    void overrideThreadPool(ProtocolType type, Side side, ExecutorService newThreadPool);
 }

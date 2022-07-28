@@ -3,11 +3,13 @@ package fr.playfull.rmq.connect;
 import fr.playfull.rmq.protocol.ProtocolBucket;
 import fr.playfull.rmq.protocol.ProtocolClientServerPair;
 import fr.playfull.rmq.protocol.ProtocolType;
+import fr.playfull.rmq.protocol.Side;
 import fr.playfull.rmq.protocol.client.Client;
 import fr.playfull.rmq.protocol.server.Server;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeoutException;
 
 public final class DefaultConnector implements Connector {
@@ -45,5 +47,14 @@ public final class DefaultConnector implements Connector {
                 ioException.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void overrideThreadPool(ProtocolType type, Side side, ExecutorService newThreadPool) {
+        ProtocolClientServerPair pair = protocolBucket.getClientServerPairOf(type);
+        if(side == Side.SERVER)
+            pair.server().setThreadPool(newThreadPool);
+        else
+            pair.client().setThreadPool(newThreadPool);
     }
 }

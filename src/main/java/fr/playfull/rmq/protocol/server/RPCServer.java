@@ -3,6 +3,7 @@ package fr.playfull.rmq.protocol.server;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.DeliverCallback;
 import fr.playfull.rmq.RabbitMQAPI;
+import fr.playfull.rmq.RabbitMQMediator;
 import fr.playfull.rmq.event.protocol.RPCMessageReceivedEvent;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class RPCServer extends Server {
                             .build();
 
                     try {
-                        RabbitMQAPI.getLogger().info("[Server] Received request in queue " + queue);
+                        RabbitMQMediator.getLogger().info("[Server] Received request in queue " + queue);
                         this.actualListenedEvent = new RPCMessageReceivedEvent(queue, RabbitMQAPI.getBufferManager().deserialize(delivery.getBody()));
                         RabbitMQAPI.getEventBus().publish(actualListenedEvent);
                     } catch(RuntimeException runtimeException) {
@@ -40,7 +41,7 @@ public class RPCServer extends Server {
                         // We serialize our object and publish it
                         actualListenedEvent.getCallback().thenAccept(answer -> {
                            try {
-                               RabbitMQAPI.getLogger().info("[Server] Sending answer in queue " + queue);
+                               RabbitMQMediator.getLogger().info("[Server] Sending answer in queue " + queue);
                                getChannel().basicPublish("", delivery.getProperties().getReplyTo(), properties, RabbitMQAPI.getBufferManager().serialize(answer));
                                getChannel().basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                                synchronized(objectMonitor){

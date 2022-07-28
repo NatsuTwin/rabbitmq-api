@@ -1,6 +1,7 @@
 package fr.playfull.rmq.protocol.client;
 
 import fr.playfull.rmq.RabbitMQAPI;
+import fr.playfull.rmq.RabbitMQMediator;
 import fr.playfull.rmq.query.Request;
 
 import java.io.IOException;

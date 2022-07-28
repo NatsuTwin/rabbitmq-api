@@ -2,6 +2,7 @@ package fr.playfull.rmq.protocol.client;
 
 import com.rabbitmq.client.AMQP;
 import fr.playfull.rmq.RabbitMQAPI;
+import fr.playfull.rmq.RabbitMQMediator;
 import fr.playfull.rmq.query.RPCRequest;
 import fr.playfull.rmq.query.Request;
 
@@ -37,7 +38,7 @@ public class RPCClient extends Client {
 
                 // We publish our request data
                 getChannel().basicPublish("", request.getQueue(), properties, RabbitMQAPI.getBufferManager().serialize(request.getPayload()));
-                RabbitMQAPI.getLogger().info("[Client] Request sent in queue " + request.getQueue());
+                RabbitMQMediator.getLogger().info("[Client] Request sent in queue " + request.getQueue());
                 // Answer handling.
                 ForkJoinPool.commonPool().execute(() -> {
                     try {
@@ -59,24 +60,24 @@ public class RPCClient extends Client {
                         // Check if we timed out.
                         if(result == null) {
                             // Notice the console that we timed out.
-                            RabbitMQAPI.getLogger().info("[Client] " + request.getQueue() + " timed out in " + duration + "ms.");
+                            RabbitMQMediator.getLogger().info("[Client] " + request.getQueue() + " timed out in " + duration + "ms.");
                             // Notice the client that we timed out.
                             rpcRequest.getRequestTimeout().getConsumer().accept(true);
                             rpcRequest.getRequestAnswer().getFuture().complete(null);
                         } else {
-                            RabbitMQAPI.getLogger().info("[Client] Received answer in queue " + request.getQueue() + " in " + duration + "ms.");
+                            RabbitMQMediator.getLogger().info("[Client] Received answer in queue " + request.getQueue() + " in " + duration + "ms.");
                             // We consume the answer
                             rpcRequest.getRequestAnswer().getConsumer().accept(result);
                             rpcRequest.getRequestAnswer().getFuture().complete(result);
                         }
                     } catch (IOException | InterruptedException exception) {
-                        RabbitMQAPI.getLogger().error(exception.getMessage());
+                        RabbitMQMediator.getLogger().error(exception.getMessage());
                         // Notice the client that something wrong happened.
                         rpcRequest.getRequestTimeout().getConsumer().accept(true);
                     }
                 });
             } catch (IOException exception) {
-                RabbitMQAPI.getLogger().error(exception.getMessage());
+                RabbitMQMediator.getLogger().error(exception.getMessage());
                 // Notice the client that something wrong happened.
                 rpcRequest.getRequestTimeout().getConsumer().accept(true);
             }
