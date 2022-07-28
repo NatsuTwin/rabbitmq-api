@@ -2,46 +2,36 @@ package fr.playfull.rmq.protocol;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import fr.playfull.rmq.RabbitMQMediator;
-import fr.playfull.rmq.connect.Credentials;
+import fr.playfull.rmq.RabbitMQRegistration;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
 
 public abstract class Protocol {
+
+    private final RabbitMQRegistration registration;
 
     private Connection connection;
     private ExecutorService threadPool;
     private Channel channel;
 
-    public Protocol() {
+    public Protocol(RabbitMQRegistration registration) {
         this.threadPool = Executors.newSingleThreadExecutor();
-    }
-
-    public void connect(Credentials credentials) {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setChannelRpcTimeout(Integer.MAX_VALUE);
-        connectionFactory.setHost(credentials.getHost());
-        connectionFactory.setPort(credentials.getPort());
-        connectionFactory.setUsername(credentials.getUserName());
-        connectionFactory.setPassword(credentials.getPassword());
-        connectionFactory.setRequestedHeartbeat(2);
-
-        try {
-            this.connection = connectionFactory.newConnection(this.threadPool);
-            this.channel = connection.createChannel();
-            RabbitMQMediator.getLogger().info("Established connection with RabbitMQ !");
-        } catch (IOException | TimeoutException exception) {
-            RabbitMQMediator.getLogger().error("Bad credentials provided ! Please fill correctly the credentials file.");
-            System.exit(-1);
-        }
+        this.registration = registration;
     }
 
     public void setThreadPool(ExecutorService threadPool) {
         this.threadPool = threadPool;
+    }
+
+    public Protocol setConnection(Connection connection) {
+        this.connection = connection;
+        return this;
+    }
+
+    public Protocol setChannel(Channel channel) {
+        this.channel = channel;
+        return this;
     }
 
     public Connection getConnection() {
@@ -52,7 +42,11 @@ public abstract class Protocol {
         return this.channel;
     }
 
-    protected ExecutorService getThreadPool() {
+    public ExecutorService getThreadPool() {
         return this.threadPool;
+    }
+
+    public RabbitMQRegistration getRegistration() {
+        return this.registration;
     }
 }

@@ -2,8 +2,7 @@ package fr.playfull.rmq.protocol.server;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.DeliverCallback;
-import fr.playfull.rmq.RabbitMQAPI;
-import fr.playfull.rmq.RabbitMQMediator;
+import fr.playfull.rmq.RabbitMQRegistration;
 import fr.playfull.rmq.event.protocol.RPCMessageReceivedEvent;
 
 import java.io.IOException;
@@ -12,6 +11,10 @@ import java.util.UUID;
 public class RPCServer extends Server {
 
     private RPCMessageReceivedEvent actualListenedEvent;
+
+    public RPCServer(RabbitMQRegistration mediator) {
+        super(mediator);
+    }
 
     @Override
     public void listen(String queue) {
@@ -32,17 +35,17 @@ public class RPCServer extends Server {
                             .build();
 
                     try {
-                        RabbitMQMediator.getLogger().info("[Server] Received request in queue " + queue);
-                        this.actualListenedEvent = new RPCMessageReceivedEvent(queue, RabbitMQAPI.getBufferManager().deserialize(delivery.getBody()));
-                        RabbitMQAPI.getEventBus().publish(actualListenedEvent);
+                        RabbitMQRegistration.getLogger().info("[Server] Received request in queue " + queue);
+                        this.actualListenedEvent = new RPCMessageReceivedEvent(queue, getRegistration().getBufferManager().deserialize(delivery.getBody()));
+                        getRegistration().getEventBus().publish(actualListenedEvent);
                     } catch(RuntimeException runtimeException) {
                         runtimeException.printStackTrace();
                     } finally {
                         // We serialize our object and publish it
                         actualListenedEvent.getCallback().thenAccept(answer -> {
                            try {
-                               RabbitMQMediator.getLogger().info("[Server] Sending answer in queue " + queue);
-                               getChannel().basicPublish("", delivery.getProperties().getReplyTo(), properties, RabbitMQAPI.getBufferManager().serialize(answer));
+                               RabbitMQRegistration.getLogger().info("[Server] Sending answer in queue " + queue);
+                               getChannel().basicPublish("", delivery.getProperties().getReplyTo(), properties, getRegistration().getBufferManager().serialize(answer));
                                getChannel().basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                                synchronized(objectMonitor){
                                    objectMonitor.notify();

@@ -1,8 +1,7 @@
 package fr.playfull.rmq.protocol.client;
 
 import com.rabbitmq.client.AMQP;
-import fr.playfull.rmq.RabbitMQAPI;
-import fr.playfull.rmq.RabbitMQMediator;
+import fr.playfull.rmq.RabbitMQRegistration;
 import fr.playfull.rmq.query.RPCRequest;
 import fr.playfull.rmq.query.Request;
 
@@ -15,6 +14,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ForkJoinPool;
 
 public class RPCClient extends Client {
+
+    public RPCClient(RabbitMQRegistration mediator) {
+        super(mediator);
+    }
 
     @Override
     public void send(Request request) {
@@ -37,8 +40,8 @@ public class RPCClient extends Client {
                         .build();
 
                 // We publish our request data
-                getChannel().basicPublish("", request.getQueue(), properties, RabbitMQAPI.getBufferManager().serialize(request.getPayload()));
-                RabbitMQMediator.getLogger().info("[Client] Request sent in queue " + request.getQueue());
+                getChannel().basicPublish("", request.getQueue(), properties, getRegistration().getBufferManager().serialize(request.getPayload()));
+                RabbitMQRegistration.getLogger().info("[Client] Request sent in queue " + request.getQueue());
                 // Answer handling.
                 ForkJoinPool.commonPool().execute(() -> {
                     try {
@@ -46,7 +49,7 @@ public class RPCClient extends Client {
                         String consumerTag = getChannel().basicConsume(replyQueueName, true, (cTag, delivery) -> {
                             if (delivery.getProperties().getCorrelationId().equals(correlationId)) {
                                 // We take the offer
-                                response.add(RabbitMQAPI.getBufferManager().deserialize(delivery.getBody()));
+                                response.add(getRegistration().getBufferManager().deserialize(delivery.getBody()));
                             }
                         }, cTag -> {});
                         // Mark now instant.
@@ -60,24 +63,24 @@ public class RPCClient extends Client {
                         // Check if we timed out.
                         if(result == null) {
                             // Notice the console that we timed out.
-                            RabbitMQMediator.getLogger().info("[Client] " + request.getQueue() + " timed out in " + duration + "ms.");
+                            RabbitMQRegistration.getLogger().info("[Client] " + request.getQueue() + " timed out in " + duration + "ms.");
                             // Notice the client that we timed out.
                             rpcRequest.getRequestTimeout().getConsumer().accept(true);
                             rpcRequest.getRequestAnswer().getFuture().complete(null);
                         } else {
-                            RabbitMQMediator.getLogger().info("[Client] Received answer in queue " + request.getQueue() + " in " + duration + "ms.");
+                            RabbitMQRegistration.getLogger().info("[Client] Received answer in queue " + request.getQueue() + " in " + duration + "ms.");
                             // We consume the answer
                             rpcRequest.getRequestAnswer().getConsumer().accept(result);
                             rpcRequest.getRequestAnswer().getFuture().complete(result);
                         }
                     } catch (IOException | InterruptedException exception) {
-                        RabbitMQMediator.getLogger().error(exception.getMessage());
+                        RabbitMQRegistration.getLogger().error(exception.getMessage());
                         // Notice the client that something wrong happened.
                         rpcRequest.getRequestTimeout().getConsumer().accept(true);
                     }
                 });
             } catch (IOException exception) {
-                RabbitMQMediator.getLogger().error(exception.getMessage());
+                RabbitMQRegistration.getLogger().error(exception.getMessage());
                 // Notice the client that something wrong happened.
                 rpcRequest.getRequestTimeout().getConsumer().accept(true);
             }

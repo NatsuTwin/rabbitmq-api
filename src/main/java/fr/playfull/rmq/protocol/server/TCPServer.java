@@ -1,14 +1,17 @@
 package fr.playfull.rmq.protocol.server;
 
 import com.rabbitmq.client.DeliverCallback;
-import fr.playfull.rmq.RabbitMQAPI;
-import fr.playfull.rmq.RabbitMQMediator;
+import fr.playfull.rmq.RabbitMQRegistration;
 import fr.playfull.rmq.event.protocol.TCPMessageReceivedEvent;
 
 import java.io.IOException;
 import java.util.UUID;
 
 public class TCPServer extends Server {
+
+    public TCPServer(RabbitMQRegistration mediator) {
+        super(mediator);
+    }
 
     @Override
     public void listen(String queue) {
@@ -21,10 +24,10 @@ public class TCPServer extends Server {
                 getChannel().basicQos(0);
 
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                    RabbitMQMediator.getLogger().info("[Server TCP] Received message in queue " + queue);
+                    RabbitMQRegistration.getLogger().info("[Server TCP] Received message in queue " + queue);
                     // We publish the event.
-                    TCPMessageReceivedEvent messageReceivedEvent = new TCPMessageReceivedEvent(queue, RabbitMQAPI.getBufferManager().deserialize(delivery.getBody()));
-                    RabbitMQAPI.getEventBus().publish(messageReceivedEvent);
+                    TCPMessageReceivedEvent messageReceivedEvent = new TCPMessageReceivedEvent(queue, getRegistration().getBufferManager().deserialize(delivery.getBody()));
+                    getRegistration().getEventBus().publish(messageReceivedEvent);
                 };
                 getChannel().basicConsume(queue, false, deliverCallback, cancelled -> {});
             } catch (IOException exception) {
