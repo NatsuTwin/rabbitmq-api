@@ -1,6 +1,5 @@
-package fr.playfull.rmq.protocol;
+package fr.playfull.rmq.pair;
 
-import fr.playfull.rmq.KeyValuePair;
 import fr.playfull.rmq.protocol.client.Client;
 import fr.playfull.rmq.protocol.server.Server;
 

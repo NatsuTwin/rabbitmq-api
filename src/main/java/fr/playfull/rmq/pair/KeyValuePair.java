@@ -1,4 +1,4 @@
-package fr.playfull.rmq;
+package fr.playfull.rmq.pair;
 
 import java.util.Objects;
 
@@ -29,8 +29,8 @@ public class KeyValuePair<K, V> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return true;
         KeyValuePair<?, ?> that = (KeyValuePair<?, ?>) o;
         return Objects.equals(key, that.key) && Objects.equals(value, that.value);
     }

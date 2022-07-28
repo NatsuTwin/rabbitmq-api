@@ -1,6 +1,6 @@
 package fr.playfull.rmq.io;
 
-import fr.playfull.rmq.RabbitMQMediator;
+import fr.playfull.rmq.RabbitMQRegistration;
 import fr.playfull.rmq.connect.Credentials;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultFileEditor implements FileEditor {
-
 
     @Override
     public File create(String path, String name) throws IOException {
@@ -57,7 +56,7 @@ public class DefaultFileEditor implements FileEditor {
 
             return new Credentials((String)map.get("host"), (int)map.get("port"), (String)map.get("user"), (String)map.get("password"));
         } catch (IOException exception) {
-            RabbitMQMediator.getLogger().error("Error occurred whilst trying to read the file : " + exception.getMessage());
+            RabbitMQRegistration.getLogger().error("Error occurred whilst trying to read the file : " + exception.getMessage());
         }
 
         throw new NullPointerException("Could not read the file !");
