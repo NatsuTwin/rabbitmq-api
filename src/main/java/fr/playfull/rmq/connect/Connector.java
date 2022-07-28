@@ -11,6 +11,4 @@ public interface Connector {
 
     // The ClientProtocols already have their connection closed.
     void disconnectAll();
-
-    void overrideThreadPool(ProtocolType type, Side side, ExecutorService newThreadPool);
 }
