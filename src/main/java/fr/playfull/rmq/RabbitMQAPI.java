@@ -9,9 +9,12 @@ import fr.playfull.rmq.protocol.ProtocolType;
 import fr.playfull.rmq.protocol.Side;
 import fr.playfull.rmq.query.Request;
 import fr.playfull.rmq.serializer.ByteSerializableBufferManager;
+import fr.playfull.rmq.serializer.RMQSerializable;
+import fr.playfull.rmq.serializer.factory.SerializableFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 
 public class RabbitMQAPI {
@@ -49,6 +52,11 @@ public class RabbitMQAPI {
 
     public static <T extends ProtocolEvent> RabbitMQAPI subscribe(Class<T> eventClass, ProtocolListener<T> event) {
         getEventBus().subscribe(eventClass, event);
+        return getInstance();
+    }
+
+    public static <T extends RMQSerializable> RabbitMQAPI addFactory(Class<T> clazz, SerializableFactory<T> factory) {
+        getBufferManager().addFactory(clazz, factory);
         return getInstance();
     }
 
