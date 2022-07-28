@@ -1,72 +1,62 @@
 package fr.playfull.rmq;
 
 import fr.playfull.rmq.connect.Connector;
-import fr.playfull.rmq.connect.Credentials;
-import fr.playfull.rmq.connect.DefaultConnector;
 import fr.playfull.rmq.event.EventBus;
+import fr.playfull.rmq.event.protocol.ProtocolEvent;
+import fr.playfull.rmq.event.protocol.ProtocolListener;
 import fr.playfull.rmq.forward.Forwarder;
-import fr.playfull.rmq.io.DefaultFileEditor;
-import fr.playfull.rmq.io.FileEditor;
-import fr.playfull.rmq.protocol.ProtocolBucket;
+import fr.playfull.rmq.protocol.ProtocolType;
+import fr.playfull.rmq.protocol.Side;
+import fr.playfull.rmq.query.Request;
 import fr.playfull.rmq.serializer.ByteSerializableBufferManager;
-import fr.playfull.rmq.serializer.DefaultByteSerializableBufferManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
-import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 public class RabbitMQAPI {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("rmq-logger");
-
-    private static Connector connector;
-    private static Forwarder forwarder;
-    private static final EventBus eventBus = new EventBus();
-   private static final ByteSerializableBufferManager bufferManager = new DefaultByteSerializableBufferManager();
-
-    private RabbitMQAPI(String path) throws IOException {
-        // We manage the forwarder loading.
-        ProtocolBucket protocolBucket = new ProtocolBucket();
-        connector = new DefaultConnector(protocolBucket);
-        forwarder = new Forwarder(protocolBucket);
-
-        // We manage the file creation.
-        FileEditor fileEditor = new DefaultFileEditor();
-        File createdFile = fileEditor.create(path, "credentials.yml");
-        Credentials credentials = fileEditor.read(createdFile);
-
-
-        // We manage the connection.
-        connector.connectAll(credentials);
-
-        // We set the shutdown hook
-        Runtime.getRuntime().addShutdownHook(new Thread(connector::disconnectAll));
+    private static RabbitMQMediator mediator;
+    private RabbitMQAPI(RabbitMQMediator aMediator) {
+        mediator = aMediator;
     }
 
-    public static RabbitMQAPI hook(String path) throws IOException {
-        return new RabbitMQAPI(path);
+    public static RabbitMQAPI hook(String filePath) throws IOException {
+        return new RabbitMQAPI(new RabbitMQMediator(filePath));
     }
 
-    public static Logger getLogger() {
-        return LOGGER;
+    public static void setThreadPool(ProtocolType type, Side side, ExecutorService threadPool) {
+        getConnector().overrideThreadPool(type, side, threadPool);
     }
 
+    public static void sendRequest(Request request) {
+        getForwarder().send(request);
+    }
+
+    public static void listen(ProtocolType protocolType, String queueName) {
+        getForwarder().listen(protocolType, queueName);
+    }
+
+    public static <T extends ProtocolEvent> void subscribe(Class<T> eventClass, ProtocolListener<T> event) {
+        getEventBus().subscribe(eventClass, event);
+    }
+
+    @Deprecated
     public static ByteSerializableBufferManager getBufferManager() {
-        return bufferManager;
+        return mediator.getBufferManager();
     }
 
+    @Deprecated
     public static Forwarder getForwarder() {
-        return forwarder;
+        return mediator.getForwarder();
     }
 
+    @Deprecated
     public static EventBus getEventBus() {
-        return eventBus;
+        return mediator.getEventBus();
     }
 
-    @Nullable
+    @Deprecated
     public static Connector getConnector() {
-        return connector;
+        return mediator.getConnector();
     }
 }
