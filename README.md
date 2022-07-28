@@ -6,7 +6,7 @@ Lightweight API which simplifies communication between two separate entities.
 <dependency>
     <groupId>fr.playfull.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
-    <version>3.10.7</version>
+    <version>4.0.0</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -67,13 +67,13 @@ Allows you to perform on the data once you received it. Is only needed for **RPC
 ### Sending a build request
 To send a request, you can do as following :
 ```java
-RabbitMQAPI.getForwarder().send(Request request);
+RabbitMQAPI.send(Request request);
 ```
 
 
 To listen to a specific queue :
 ```java
-RabbitMQAPI.getForwarder().send(ProtocolType protocolType, String queueName);
+RabbitMQAPI.listen(ProtocolType protocolType, String queueName);
 ```
 
 
@@ -119,7 +119,7 @@ public class AccountFactory implements SerializableFactory<Account> {
 #### Registering the factory
 Finally, you need to register your factory as following :
 ```java
-RabbitMQAPI.getBufferManager().addFactory(Account.class, new AccountFactory());
+RabbitMQAPI.addFactory(Account.class, new AccountFactory());
 ```
 
 ## Event system
@@ -147,5 +147,5 @@ public class DefaultProtocolListener implements ProtocolListener<TCPMessageRecei
 ### Registering to an event
 You can register to an event by using : 
 ```java
-RabbitMQAPI.getEventBus().subscribe(Class<E extends ProtocolEvent> eventClass, ProtocolListener<E extends ProtocolEvent> protocolListener);
+RabbitMQAPI.subscribe(Class<E extends ProtocolEvent> eventClass, ProtocolListener<E extends ProtocolEvent> protocolListener);
 ```
