@@ -1,6 +1,6 @@
 package fr.playfull.rmq.forward;
 
-import fr.playfull.rmq.protocol.ProtocolBucket;
+import fr.playfull.rmq.protocol.store.ProtocolBucket;
 import fr.playfull.rmq.protocol.ProtocolType;
 import fr.playfull.rmq.query.Request;
 
