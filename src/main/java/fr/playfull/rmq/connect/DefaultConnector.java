@@ -39,10 +39,12 @@ public final class DefaultConnector implements Connector {
                 Channel channel = connection.createChannel();
 
                 // We first do some elementary checks to avoid a Too Many Connections error.
-                if(protocol.getConnection().isOpen())
-                    protocol.getConnection().close();
-                if(protocol.getChannel().isOpen())
-                    protocol.getChannel().close();
+                if(protocol.getConnection() != null && protocol.getChannel() != null) {
+                    if(protocol.getConnection().isOpen())
+                        protocol.getConnection().close();
+                    if(protocol.getChannel().isOpen())
+                        protocol.getChannel().close();
+                }
 
                 // We then set the connection and channel for the protocol.
                 protocol.setConnection(connection).setChannel(channel);
