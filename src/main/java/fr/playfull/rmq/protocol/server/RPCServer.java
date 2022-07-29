@@ -24,7 +24,7 @@ public class RPCServer extends Server {
                 // We declare & purge our queue
                 getChannel().queueDeclare(queue, false, false, false, null);
                 getChannel().queuePurge(queue);
-                getChannel().basicQos(1);
+                getChannel().basicQos(0);
 
                 Object objectMonitor = new Object();
 
