@@ -6,7 +6,7 @@ Lightweight API which simplifies communication between two separate entities.
 <dependency>
     <groupId>fr.playfull.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
-    <version>4.1.1</version>
+    <version>4.2.5</version>
     <scope>compile</scope>
 </dependency>
 ```
@@ -127,7 +127,7 @@ RabbitMQAPI.addFactory(Account.class, new AccountFactory());
 ### Different events
 There are different events :
 
- • [TCPMessageReceivedEvent](src/main/java/fr/playfull/rmq/event/protocol/TCPMessageReceivedEvent.java) - It allows you to get the message and the extra, but you cannot set an answer.
+ • [TCPMessageReceivedEvent](src/main/java/fr/playfull/rmq/event/protocol/TCPMessageReceivedEvent.java) - It allows you to get the message for the pubsub and the TCP.
 
  • [RPCMessageReceivedEvent](src/main/java/fr/playfull/rmq/event/protocol/RPCMessageReceivedEvent.java) - It allows you to set an answer, as well as to get information.
 
