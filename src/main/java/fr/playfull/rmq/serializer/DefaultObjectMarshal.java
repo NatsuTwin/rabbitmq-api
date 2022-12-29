@@ -4,10 +4,8 @@ import fr.playfull.rmq.serializer.marshal.*;
 import fr.playfull.rmq.serializer.entity.ValueWrapper;
 import fr.playfull.rmq.serializer.marshal.primitive.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class DefaultObjectMarshal implements ObjectMarshal {
 
@@ -15,6 +13,8 @@ public class DefaultObjectMarshal implements ObjectMarshal {
     public DefaultObjectMarshal() {
         this.marshalMap.put(Integer.class, new IntegerValueMarshal());
         this.marshalMap.put(HashMap.class, new MapValueMarshal());
+        this.marshalMap.put(LinkedHashMap.class, new MapValueMarshal());
+        this.marshalMap.put(BigDecimal.class, new DoubleValueMarshal());
         this.marshalMap.put(Map.class, new MapValueMarshal());
         this.marshalMap.put(String.class, new StringValueMarshal());
         this.marshalMap.put(RMQSerializable.class, new GenericValueMarshal());

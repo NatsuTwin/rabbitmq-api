@@ -36,7 +36,7 @@ public class RabbitMQRegistration {
         this.protocolMediator = ProtocolMediator.of(fileEditor.read(createdFile), protocolBucket);
 
         // We set the shutdown hook
-        Runtime.getRuntime().addShutdownHook(new Thread(protocolMediator::disconnectAll));
+        //Runtime.getRuntime().addShutdownHook(new Thread(protocolMediator::disconnectAll));
     }
 
     public static Logger getLogger() {

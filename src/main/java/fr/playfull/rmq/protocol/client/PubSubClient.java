@@ -14,12 +14,14 @@ public class PubSubClient extends Client {
 
     @Override
     public void send(Request request) {
-        try {
-            getChannel().exchangeDeclare(request.getQueue(), "fanout");
-            getChannel().basicPublish(request.getQueue(), "", null, getRegistration().getBufferManager().serialize(request.getPayload()));
-            RabbitMQRegistration.getLogger().info(" [PUBSUB Client] Sent " + request.getPayload() + " in queue : " + request.getQueue() + ".");
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
+        this.getThreadPool().execute(() -> {
+            try {
+                getChannel().exchangeDeclare(request.getQueue(), "fanout");
+                getChannel().basicPublish(request.getQueue(), "", null, getRegistration().getBufferManager().serialize(request.getPayload()));
+                RabbitMQRegistration.getLogger().info(" [PUBSUB Client] Sent data (type :" + request.getPayload().getClass().getName() + ") in queue : " + request.getQueue() + ".");
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        });
     }
 }
