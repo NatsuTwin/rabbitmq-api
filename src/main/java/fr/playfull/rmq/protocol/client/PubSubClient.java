@@ -1,6 +1,5 @@
 package fr.playfull.rmq.protocol.client;
 
-import com.rabbitmq.client.MessageProperties;
 import fr.playfull.rmq.RabbitMQRegistration;
 import fr.playfull.rmq.query.Request;
 

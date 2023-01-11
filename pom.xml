@@ -6,7 +6,7 @@
 
     <groupId>fr.playfull.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
-    <version>4.2.8</version>
+    <version>4.2.8-DEBUG3</version>
 
     <distributionManagement>
         <repository>
