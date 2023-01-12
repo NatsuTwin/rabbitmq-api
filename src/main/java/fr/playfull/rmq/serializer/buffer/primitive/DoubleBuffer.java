@@ -10,12 +10,12 @@ import java.nio.ByteBuffer;
 public class DoubleBuffer implements ValueBuffer<Double> {
 
     @Override
-    public byte[] transform(int id, ValueWrapper<Double> valueWrapper) {
-        return getBytesAndId(ByteBuffer.allocate(4).putDouble(valueWrapper.getValue()).array(), valueWrapper);
+    public byte[] transform(String id, ValueWrapper<Double> valueWrapper) {
+        return getBytesAndId(ByteBuffer.allocate(8).putDouble(valueWrapper.getValue()).array(), valueWrapper);
     }
 
     @Override
     public Double read(SerializableFactory serializableFactory, ObjectMarshal objectMarshal, byte[] bytes) {
-        return ByteBuffer.wrap(getWithoutId(bytes)).getDouble();
+        return ByteBuffer.wrap(bytes).getDouble();
     }
 }

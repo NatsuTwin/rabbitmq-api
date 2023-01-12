@@ -7,24 +7,15 @@ import java.util.Map;
 
 public class RMQSerializableFactoryBucket {
 
-    private final HashMap<Integer, Class<? extends RMQSerializable>> map = new HashMap<>();
+    private final HashMap<String, Class<? extends RMQSerializable>> map = new HashMap<>();
     private final HashMap<Class<? extends RMQSerializable>, SerializableFactory<?>> factoryMap = new HashMap<>();
-    private int index;
-    public RMQSerializableFactoryBucket() {
-        index = SerializableType.values().length - 1;
-    }
 
     /**
      * This method allows the {@link ByteSerializableBufferManager} to add a RMQSerializable item and behavior.
      * @param clazz the class.
-     * @return index the index in which the class has been placed.
      */
-    public int addRMQSerializableItem(Class<? extends RMQSerializable> clazz) {
-        this.index++;
-
-        this.map.put(index, clazz);
-
-        return this.index;
+    public void addRMQSerializableItem(Class<? extends RMQSerializable> clazz) {
+        this.map.put(clazz.getSimpleName(), clazz);
     }
 
     /**
@@ -41,7 +32,7 @@ public class RMQSerializableFactoryBucket {
      * @param id the id got from the bytes.
      * @return an instance of {@link SerializableFactory}
      */
-    public SerializableFactory<?> getFactory(int id) {
+    public SerializableFactory<?> getFactory(String id) {
         return factoryMap.get(map.get(id));
     }
 
@@ -59,8 +50,8 @@ public class RMQSerializableFactoryBucket {
      * @param clazz the class of the RMQSerializable
      * @return {@link Integer} the index
      */
-    public int retrieveIndex(Class<? extends RMQSerializable> clazz) {
-        for(Map.Entry<Integer, Class<? extends RMQSerializable>> entry : map.entrySet()) {
+    public String retrieveId(Class<? extends RMQSerializable> clazz) {
+        for(Map.Entry<String, Class<? extends RMQSerializable>> entry : map.entrySet()) {
             if(entry.getValue() == clazz)
                 return entry.getKey();
         }

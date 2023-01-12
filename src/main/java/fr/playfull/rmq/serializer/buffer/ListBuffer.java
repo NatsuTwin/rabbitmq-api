@@ -15,7 +15,7 @@ public class ListBuffer implements ValueBuffer<List<Object>> {
     private final String separator = "%-%";
 
     @Override
-    public byte[] transform(int id, ValueWrapper<List<Object>> valueWrapper) {
+    public byte[] transform(String id, ValueWrapper<List<Object>> valueWrapper) {
         StringBuilder stringBuilder = new StringBuilder();
 
         for(Object object : valueWrapper.getValue()) {
@@ -27,7 +27,7 @@ public class ListBuffer implements ValueBuffer<List<Object>> {
 
     @Override
     public List<Object> read(SerializableFactory serializableFactory, ObjectMarshal objectMarshal, byte[] bytes) {
-        String strArray = new String(getWithoutId(bytes), StandardCharsets.UTF_8);
+        String strArray = new String(bytes, StandardCharsets.UTF_8);
         List<Object> list = new ArrayList<>();
 
         for(String element : strArray.split(this.separator)) {

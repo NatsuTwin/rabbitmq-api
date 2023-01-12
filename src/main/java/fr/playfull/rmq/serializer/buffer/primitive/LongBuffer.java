@@ -10,12 +10,12 @@ import java.nio.ByteBuffer;
 public class LongBuffer implements ValueBuffer<Long> {
 
     @Override
-    public byte[] transform(int id, ValueWrapper<Long> valueWrapper) {
-        return getBytesAndId(ByteBuffer.allocate(4).putLong(valueWrapper.getValue()).array(), valueWrapper);
+    public byte[] transform(String id, ValueWrapper<Long> valueWrapper) {
+        return getBytesAndId(ByteBuffer.allocate(8).putLong(valueWrapper.getValue()).array(), valueWrapper);
     }
 
     @Override
     public Long read(SerializableFactory serializableFactory, ObjectMarshal objectMarshal, byte[] bytes) {
-        return ByteBuffer.wrap(getWithoutId(bytes)).getLong();
+        return ByteBuffer.wrap(bytes).getLong();
     }
 }

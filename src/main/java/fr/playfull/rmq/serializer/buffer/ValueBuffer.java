@@ -6,6 +6,7 @@ import fr.playfull.rmq.serializer.ObjectMarshal;
 import fr.playfull.rmq.serializer.entity.ValueWrapper;
 import fr.playfull.rmq.serializer.factory.SerializableFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public interface ValueBuffer<T> {
@@ -18,7 +19,7 @@ public interface ValueBuffer<T> {
      * @param valueWrapper - The {@link ValueWrapper<T>} that contains the data.
      * @return an array of bytes
      */
-    byte[] transform(int id, ValueWrapper<T> valueWrapper);
+    byte[] transform(String id, ValueWrapper<T> valueWrapper);
 
     /**
      * This method allows the {@link ByteSerializableBufferManager} to read a specific object type from an array of bytes
@@ -29,14 +30,16 @@ public interface ValueBuffer<T> {
      */
     T read(SerializableFactory serializableFactory, ObjectMarshal objectMarshal, byte[] bytes);
 
-    default byte[] getBytesAndId(byte[] bytes, int id) {
-        byte[] joinedArray = Arrays.copyOf(new byte[] {(byte)id}, bytes.length + 1);
-        System.arraycopy(bytes, 0, joinedArray, 1, bytes.length);
+    default byte[] getBytesAndId(byte[] bytes, String id) {
+        // add a coma to separate the id from the data.
+        id = id.concat(",");
+        byte[] joinedArray = Arrays.copyOf(id.getBytes(StandardCharsets.UTF_8), bytes.length + id.length());
+        System.arraycopy(bytes, 0, joinedArray, id.length(), bytes.length);
         return joinedArray;
     }
 
     default byte[] getBytesAndId(byte[] bytes, ValueWrapper<T> valueWrapper) {
-        return getBytesAndId(bytes, valueWrapper.getType().getId());
+        return getBytesAndId(bytes, valueWrapper.getType().name());
     }
 
     default int getId(byte[] bytes) {
