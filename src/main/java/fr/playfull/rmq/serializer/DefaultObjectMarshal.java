@@ -23,6 +23,7 @@ public class DefaultObjectMarshal implements ObjectMarshal {
         this.marshalMap.put(Long.class, new LongValueMarshal());
         this.marshalMap.put(ArrayList.class, new ListValueMarshal());
         this.marshalMap.put(Boolean.class, new BooleanValueMarshal());
+        this.marshalMap.put(Short.class, new ShortValueMarshal());
     }
 
     @Override
