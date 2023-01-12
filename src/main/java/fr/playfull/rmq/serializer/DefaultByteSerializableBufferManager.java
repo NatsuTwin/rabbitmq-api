@@ -1,18 +1,23 @@
 package fr.playfull.rmq.serializer;
 
-import fr.playfull.rmq.serializer.buffer.*;
-import fr.playfull.rmq.serializer.buffer.primitive.*;
+import fr.playfull.rmq.serializer.buffer.GenericBuffer;
+import fr.playfull.rmq.serializer.buffer.ListBuffer;
+import fr.playfull.rmq.serializer.buffer.MapBuffer;
+import fr.playfull.rmq.serializer.buffer.ValueBuffer;
 import fr.playfull.rmq.serializer.buffer.primitive.StringBuffer;
+import fr.playfull.rmq.serializer.buffer.primitive.*;
 import fr.playfull.rmq.serializer.entity.ValueWrapper;
 import fr.playfull.rmq.serializer.factory.SerializableFactory;
 import fr.playfull.rmq.serializer.marshal.GenericValueMarshal;
 import fr.playfull.rmq.serializer.marshal.ValueWrapperMarshal;
+import org.slf4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class DefaultByteSerializableBufferManager implements ByteSerializableBufferManager {
 
+    private final Logger logger;
     private final Map<Class<?>, ValueBuffer<?>> bufferMap = new HashMap<>();
     private final Map<String, ValueBuffer<?>> byIdMap = new HashMap<>();
 
@@ -20,7 +25,9 @@ public class DefaultByteSerializableBufferManager implements ByteSerializableBuf
     // We allocate an unique instance to avoid multiple instances pending.
     private final GenericBuffer genericBuffer = new GenericBuffer();
     private final ObjectMarshal objectMarshal;
-    public DefaultByteSerializableBufferManager() {
+
+    public DefaultByteSerializableBufferManager(Logger logger) {
+        this.logger = logger;
         this.objectMarshal = new DefaultObjectMarshal();
         // We load by types
         bufferMap.put(String.class, new StringBuffer());
@@ -71,6 +78,13 @@ public class DefaultByteSerializableBufferManager implements ByteSerializableBuf
         String[] data = new String(bytes, StandardCharsets.UTF_8).split(",");
         // retrieve the id.
         String id = data[0];
+        // check if the id doesn't exist.
+        if(byIdMap.get(id) == null) {
+            // notify the console that a rabbit-mq-api that is on version 4 or older tried to communicate.
+            logger.warn("An unknown consumer tried to communicate with this instance of rabbit-mq-api.");
+            logger.warn("Please use a version of rabbit-mq-api that is up-to-date.");
+            return null;
+        }
         // retrieve the object.
         byte[] object = Arrays.copyOfRange(bytes, id.length() + 1, bytes.length);
         return (T) this.byIdMap.get(id).read(factoryBucket.getFactory(id), objectMarshal,
