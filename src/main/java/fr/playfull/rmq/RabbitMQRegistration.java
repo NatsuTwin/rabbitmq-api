@@ -1,10 +1,6 @@
 package fr.playfull.rmq;
 
-import fr.playfull.rmq.connect.Connector;
-import fr.playfull.rmq.connect.Credentials;
-import fr.playfull.rmq.connect.DefaultConnector;
 import fr.playfull.rmq.event.EventBus;
-import fr.playfull.rmq.forward.Forwarder;
 import fr.playfull.rmq.io.DefaultFileEditor;
 import fr.playfull.rmq.io.FileEditor;
 import fr.playfull.rmq.protocol.ProtocolMediator;
@@ -14,7 +10,6 @@ import fr.playfull.rmq.serializer.DefaultByteSerializableBufferManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
@@ -24,7 +19,7 @@ public class RabbitMQRegistration {
 
     private final ProtocolMediator protocolMediator;
     private final EventBus eventBus = new EventBus();
-    private final ByteSerializableBufferManager bufferManager = new DefaultByteSerializableBufferManager();
+    private final ByteSerializableBufferManager bufferManager = new DefaultByteSerializableBufferManager(LOGGER);
 
     protected RabbitMQRegistration(String path) throws IOException {
         // We manage the forwarder loading.
