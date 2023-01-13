@@ -24,7 +24,16 @@ public class PubSubServer extends Server {
 
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                     RabbitMQRegistration.getLogger().info("[PUBSUB Server] Received message with exchange name : " + exchange + ".");
-                    getRegistration().getEventBus().publish(new TCPMessageReceivedEvent(exchange, getRegistration().getBufferManager().deserialize(delivery.getBody())));
+                    // retrieve the data.
+                    byte[] data = getRegistration().getBufferManager().deserialize(delivery.getBody());
+                    // check if the data isn't null.
+                    // else don't fire the event to avoid NullPointExceptions.
+                    if(data != null) {
+                        // We publish the event.
+                        getRegistration().getEventBus().publish(new TCPMessageReceivedEvent(exchange, data));
+                    } else {
+                        RabbitMQRegistration.getLogger().info("[PUBSUB Server] Consumer tried to pass NULL data into " + queueName);
+                    }
                 };
                 getChannel().basicConsume(queueName, true, deliverCallback, consumerTag -> { });
             } catch (IOException exception) {
