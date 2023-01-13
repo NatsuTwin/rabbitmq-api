@@ -36,24 +36,34 @@ public class RPCServer extends Server {
 
                     try {
                         RabbitMQRegistration.getLogger().info("[Server] Received request in queue " + queue);
-                        this.actualListenedEvent = new RPCMessageReceivedEvent(queue, getRegistration().getBufferManager().deserialize(delivery.getBody()));
-                        getRegistration().getEventBus().publish(actualListenedEvent);
+                        // retrieve the data.
+                        Object data = getRegistration().getBufferManager().deserialize(delivery.getBody());
+                        // check if the data isn't null.
+                        // else don't fire the event to avoid NullPointExceptions.
+                        if(data != null) {
+                            this.actualListenedEvent = new RPCMessageReceivedEvent(queue, data);
+                            getRegistration().getEventBus().publish(actualListenedEvent);
+                        } else {
+                            RabbitMQRegistration.getLogger().info("[Server] Consumer tried to pass NULL data into " + queue);
+                        }
                     } catch(RuntimeException runtimeException) {
                         runtimeException.printStackTrace();
                     } finally {
-                        // We serialize our object and publish it
-                        actualListenedEvent.getCallback().thenAccept(answer -> {
-                           try {
-                               RabbitMQRegistration.getLogger().info("[Server] Sending answer in queue " + queue);
-                               getChannel().basicPublish("", delivery.getProperties().getReplyTo(), properties, getRegistration().getBufferManager().serialize(answer));
-                               getChannel().basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                               synchronized(objectMonitor){
-                                   objectMonitor.notify();
-                               }
-                           } catch(IOException exception) {
-                               exception.printStackTrace();
-                           }
-                        });
+                        if(actualListenedEvent != null) {
+                            // We serialize our object and publish it
+                            actualListenedEvent.getCallback().thenAccept(answer -> {
+                                try {
+                                    RabbitMQRegistration.getLogger().info("[Server] Sending answer in queue " + queue);
+                                    getChannel().basicPublish("", delivery.getProperties().getReplyTo(), properties, getRegistration().getBufferManager().serialize(answer));
+                                    getChannel().basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                                    synchronized(objectMonitor){
+                                        objectMonitor.notify();
+                                    }
+                                } catch(IOException exception) {
+                                    exception.printStackTrace();
+                                }
+                            });
+                        }
                     }
                 };
 

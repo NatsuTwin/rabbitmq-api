@@ -10,12 +10,12 @@ import java.nio.ByteBuffer;
 public class IntegerBuffer implements ValueBuffer<Integer> {
 
     @Override
-    public byte[] transform(int id, ValueWrapper<Integer> valueWrapper) {
+    public byte[] transform(String id, ValueWrapper<Integer> valueWrapper) {
         return getBytesAndId(ByteBuffer.allocate(4).putInt(valueWrapper.getValue()).array(), valueWrapper);
     }
 
     @Override
     public Integer read(SerializableFactory serializableFactory, ObjectMarshal objectMarshal, byte[] bytes) {
-        return ByteBuffer.wrap(getWithoutId(bytes)).getInt();
+        return ByteBuffer.wrap(bytes).getInt();
     }
 }

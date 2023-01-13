@@ -10,14 +10,13 @@ import java.nio.charset.StandardCharsets;
 public class StringBuffer implements ValueBuffer<String> {
 
     @Override
-    public byte[] transform(int id, ValueWrapper<String> valueWrapper) {
+    public byte[] transform(String id, ValueWrapper<String> valueWrapper) {
         byte[] bytes = valueWrapper.getValue().getBytes(StandardCharsets.UTF_8);
-
         return getBytesAndId(bytes, valueWrapper);
     }
 
     @Override
     public String read(SerializableFactory serializableFactory, ObjectMarshal objectMarshal, byte[] bytes) {
-        return new String(getWithoutId(bytes), StandardCharsets.UTF_8);
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 }

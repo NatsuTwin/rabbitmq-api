@@ -25,9 +25,16 @@ public class TCPServer extends Server {
 
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                     RabbitMQRegistration.getLogger().info("[Server TCP] Received message in queue " + queue);
-                    // We publish the event.
-                    TCPMessageReceivedEvent messageReceivedEvent = new TCPMessageReceivedEvent(queue, getRegistration().getBufferManager().deserialize(delivery.getBody()));
-                    getRegistration().getEventBus().publish(messageReceivedEvent);
+                    // retrieve the data.
+                    Object data = getRegistration().getBufferManager().deserialize(delivery.getBody());
+                    // check if the data isn't null.
+                    // else don't fire the event to avoid NullPointExceptions.
+                    if(data != null) {
+                        // We publish the event.
+                        getRegistration().getEventBus().publish(new TCPMessageReceivedEvent(queue, data));
+                    } else {
+                        RabbitMQRegistration.getLogger().info("[Server TCP] Consumer tried to pass NULL data into " + queue);
+                    }
                 };
                 getChannel().basicConsume(queue, false, deliverCallback, cancelled -> {});
             } catch (IOException exception) {

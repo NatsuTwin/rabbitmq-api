@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 public class RabbitMQAPI {
 
     private static RabbitMQRegistration registration;
+
     private RabbitMQAPI(RabbitMQRegistration aMediator) {
         registration = aMediator;
     }
