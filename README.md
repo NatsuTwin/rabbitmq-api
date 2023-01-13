@@ -1,7 +1,6 @@
 # RMQ API
 Lightweight API which simplifies communication between two separate entities.
 
-# Maven dependency
 ```xml
 <dependency>
     <groupId>fr.playfull.rmq</groupId>
@@ -10,6 +9,14 @@ Lightweight API which simplifies communication between two separate entities.
     <scope>compile</scope>
 </dependency>
 ```
+
+| Information  | Valeur |
+| ------------- | ------------- |
+| Version de Java  | 17  |
+| Gestionnaire de dépendances  | Maven  |
+| Mainteneurs | @Zentae , @NatsuTwin
+| Projet | PlayFull |
+
 
 # How to use it ?
 
