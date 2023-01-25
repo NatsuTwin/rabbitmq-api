@@ -3,19 +3,19 @@ Lightweight API which simplifies communication between two separate entities.
 
 ```xml
 <dependency>
-    <groupId>fr.erarealms.rmq</groupId>
+    <groupId>fr.natsu.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
     <version>5.0.0</version>
     <scope>compile</scope>
 </dependency>
 ```
 
-| Information  | Valeur               |
-| ------------- |----------------------|
-| Version de Java  | 17                   |
-| Gestionnaire de dépendances  | Maven                |
-| Mainteneurs | Zentae, Natsu
-| Projet | EraRealms            |
+| Information                 | Valeur               |
+|-----------------------------|----------------------|
+| Version de Java             | 17                   |
+| Gestionnaire de dépendances | Maven                |
+| Mainteneur principal         | Natsu
+| Projet                      | EraRealms            |
 
 
 # How to use it ?
@@ -29,7 +29,7 @@ RabbitMQAPI.hook(String filePath);
 ## Request
 
 ### General information
-The request can be created using the inner class [RequestBuilder](src/main/java/fr/erarealms/rmq/query/Request.java).
+The request can be created using the inner class [RequestBuilder](src/main/java/fr/natsu/rmq/query/Request.java).
 You do not have to provide all the elements that the Builder contains. Nevertheless, some of them are crucial to the correct working of the API.
 
 A builder can be created by using the static access `Request.Builder(ProtocolType protocolType)`. It contains a lot of parameters that can be filled in.
@@ -134,12 +134,12 @@ RabbitMQAPI.addFactory(Account.class, new AccountFactory());
 ### Different events
 There are different events :
 
- • [TCPMessageReceivedEvent](src/main/java/fr/erarealms/rmq/event/protocol/TCPMessageReceivedEvent.java) - It allows you to get the message for the pubsub and the TCP.
+ • [TCPMessageReceivedEvent](src/main/java/fr/natsu/rmq/event/protocol/TCPMessageReceivedEvent.java) - It allows you to get the message for the pubsub and the TCP.
 
- • [RPCMessageReceivedEvent](src/main/java/fr/erarealms/rmq/event/protocol/RPCMessageReceivedEvent.java) - It allows you to set an answer, as well as to get information.
+ • [RPCMessageReceivedEvent](src/main/java/fr/natsu/rmq/event/protocol/RPCMessageReceivedEvent.java) - It allows you to set an answer, as well as to get information.
 
 ### ProtocolListener
-You have to implement the [ProtocolListener](src/main/java/fr/erarealms/rmq/event/protocol/ProtocolListener.java) class.
+You have to implement the [ProtocolListener](src/main/java/fr/natsu/rmq/event/protocol/ProtocolListener.java) class.
 ```java
 public class DefaultProtocolListener implements ProtocolListener<TCPMessageReceivedEvent> {
 

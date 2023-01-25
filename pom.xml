@@ -4,14 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>fr.erarealms.rmq</groupId>
+    <groupId>fr.natsu.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
     <version>5.0.0</version>
 
     <distributionManagement>
         <repository>
             <id>erarealms-nexus</id>
-            <url>http://nexus.erarealms.fr/repository/maven-releases/</url>
+            <url>https://nexus.erarealms.fr/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 
