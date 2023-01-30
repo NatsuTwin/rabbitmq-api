@@ -6,11 +6,15 @@
 
     <groupId>fr.natsu.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
-    <version>5.0.0</version>
+    <version>5.1.0</version>
 
     <distributionManagement>
+        <snapshotRepository>
+            <id>erarealms-snapshots</id>
+            <url>https://nexus.erarealms.fr/repository/maven-snapshots/</url>
+        </snapshotRepository>
         <repository>
-            <id>erarealms-nexus</id>
+            <id>erarealms-releases</id>
             <url>https://nexus.erarealms.fr/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
@@ -34,8 +38,8 @@
     </build>
 
     <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -43,11 +47,13 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.4.5</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
