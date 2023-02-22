@@ -1,12 +1,8 @@
 package fr.natsu.rmq.serializer;
 
-import fr.natsu.rmq.serializer.buffer.GenericBuffer;
-import fr.natsu.rmq.serializer.buffer.ListBuffer;
-import fr.natsu.rmq.serializer.buffer.MapBuffer;
-import fr.natsu.rmq.serializer.buffer.ValueBuffer;
-
-import fr.natsu.rmq.serializer.buffer.primitive.*;
+import fr.natsu.rmq.serializer.buffer.*;
 import fr.natsu.rmq.serializer.buffer.primitive.StringBuffer;
+import fr.natsu.rmq.serializer.buffer.primitive.*;
 import fr.natsu.rmq.serializer.entity.ValueWrapper;
 import fr.natsu.rmq.serializer.factory.SerializableFactory;
 import fr.natsu.rmq.serializer.marshal.GenericValueMarshal;
@@ -31,30 +27,32 @@ public class DefaultByteSerializableBufferManager implements ByteSerializableBuf
         this.logger = logger;
         this.objectMarshal = new DefaultObjectMarshal();
         // We load by types
-        bufferMap.put(String.class, new StringBuffer());
-        bufferMap.put(Integer.class, new IntegerBuffer());
         bufferMap.put(Map.class, new MapBuffer());
-        bufferMap.put(HashMap.class, new MapBuffer());
-        bufferMap.put(LinkedHashMap.class, new MapBuffer());
-        bufferMap.put(Double.class, new DoubleBuffer());
         bufferMap.put(Long.class, new LongBuffer());
+        bufferMap.put(UUID.class, new UUIDBuffer());
+        bufferMap.put(HashMap.class, new MapBuffer());
         bufferMap.put(Float.class, new FloatBuffer());
+        bufferMap.put(Short.class, new ShortBuffer());
+        bufferMap.put(String.class, new StringBuffer());
+        bufferMap.put(Double.class, new DoubleBuffer());
         bufferMap.put(ArrayList.class, new ListBuffer());
+        bufferMap.put(Integer.class, new IntegerBuffer());
         bufferMap.put(Boolean.class, new BooleanBuffer());
         bufferMap.put(RMQSerializable.class, genericBuffer);
-        bufferMap.put(Short.class, new ShortBuffer());
+        bufferMap.put(LinkedHashMap.class, new MapBuffer());
 
         // We load by IDS (useful for deserialization)
-        byIdMap.put(SerializableType.CUSTOM.getIdentifier(), genericBuffer);
-        byIdMap.put(SerializableType.BOOLEAN.getIdentifier(), new BooleanBuffer());
-        byIdMap.put(SerializableType.LONG.getIdentifier(), new LongBuffer());
-        byIdMap.put(SerializableType.FLOAT.getIdentifier(), new FloatBuffer());
         byIdMap.put(SerializableType.MAP.getIdentifier(), new MapBuffer());
-        byIdMap.put(SerializableType.INTEGER.getIdentifier(), new IntegerBuffer());
+        byIdMap.put(SerializableType.CUSTOM.getIdentifier(), genericBuffer);
+        byIdMap.put(SerializableType.LONG.getIdentifier(), new LongBuffer());
+        byIdMap.put(SerializableType.LIST.getIdentifier(), new ListBuffer());
+        byIdMap.put(SerializableType.UUID.getIdentifier(), new UUIDBuffer());
+        byIdMap.put(SerializableType.FLOAT.getIdentifier(), new FloatBuffer());
+        byIdMap.put(SerializableType.SHORT.getIdentifier(), new ShortBuffer());
         byIdMap.put(SerializableType.STRING.getIdentifier(), new StringBuffer());
         byIdMap.put(SerializableType.DOUBLE.getIdentifier(), new DoubleBuffer());
-        byIdMap.put(SerializableType.LIST.getIdentifier(), new ListBuffer());
-        byIdMap.put(SerializableType.SHORT.getIdentifier(), new ShortBuffer());
+        byIdMap.put(SerializableType.INTEGER.getIdentifier(), new IntegerBuffer());
+        byIdMap.put(SerializableType.BOOLEAN.getIdentifier(), new BooleanBuffer());
     }
 
     @Override

@@ -12,7 +12,8 @@ public enum SerializableType {
     LIST("LIST"),
     BOOLEAN("BOOLEAN"),
     CUSTOM("CUSTOM"),
-    SHORT("SHORT");
+    SHORT("SHORT"),
+    UUID("UUID");
 
     private final String identifier;
 
