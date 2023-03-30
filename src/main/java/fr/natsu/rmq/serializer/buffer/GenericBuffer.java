@@ -1,5 +1,8 @@
 package fr.natsu.rmq.serializer.buffer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import fr.natsu.rmq.RabbitMQRegistration;
 import fr.natsu.rmq.serializer.entity.ValueWrapper;
 import fr.natsu.rmq.serializer.factory.SerializableFactory;
 import fr.natsu.rmq.serializer.ObjectMarshal;
@@ -12,12 +15,22 @@ public class GenericBuffer implements ValueBuffer<RMQSerializable> {
 
     @Override
     public byte[] transform(String id, ValueWrapper<RMQSerializable> valueWrapper) {
-        return getBytesAndId(GSON.toJson(valueWrapper.getValue()).getBytes(StandardCharsets.UTF_8), id);
+        try {
+            return getBytesAndId(OBJECT_MAPPER.writeValueAsString(valueWrapper.getValue()).getBytes(StandardCharsets.UTF_8), id);
+        } catch (JsonProcessingException exception) {
+            RabbitMQRegistration.getLogger().error("Une erreur est survenue lors de l'écriture de la valeur : " + exception.getMessage());
+            return new byte[0];
+        }
     }
 
     @Override
     public RMQSerializable read(SerializableFactory serializableFactory, ObjectMarshal objectMarshal, byte[] bytes) {
-        Map<String, Object> deserializedMap = GSON.fromJson(new String(bytes), Map.class);
-        return serializableFactory.create(deserializedMap);
+        try {
+            Map<String, Object> deserializedMap = OBJECT_MAPPER.readValue(new String(bytes), Map.class);
+            return serializableFactory.create(deserializedMap);
+        } catch (JsonProcessingException e) {
+            RabbitMQRegistration.getLogger().error("Une erreur est survenue lors de la lecture de la valeur : " + e.getMessage());
+            return null;
+        }
     }
 }
