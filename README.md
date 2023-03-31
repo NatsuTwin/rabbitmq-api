@@ -5,7 +5,7 @@ Lightweight API which simplifies communication between two separate entities.
 <dependency>
     <groupId>fr.natsu.rmq</groupId>
     <artifactId>rabbitmq-api</artifactId>
-    <version>5.1.1-SNAPSHOT</version>
+    <version>5.1.1</version>
     <scope>compile</scope>
 </dependency>
 ```
