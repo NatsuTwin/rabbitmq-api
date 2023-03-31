@@ -1,6 +1,6 @@
 package fr.natsu.rmq.serializer.buffer;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.natsu.rmq.serializer.entity.ValueWrapper;
 import fr.natsu.rmq.serializer.factory.SerializableFactory;
 import fr.natsu.rmq.serializer.ByteSerializableBufferManager;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public interface ValueBuffer<T> {
 
-    Gson GSON = new Gson();
+    ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /**
      * This method allows the {@link ByteSerializableBufferManager} to know how to transform a specific type into bytes.

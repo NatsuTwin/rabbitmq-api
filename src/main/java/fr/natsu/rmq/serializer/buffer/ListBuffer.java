@@ -1,5 +1,7 @@
 package fr.natsu.rmq.serializer.buffer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fr.natsu.rmq.RabbitMQRegistration;
 import fr.natsu.rmq.serializer.entity.ValueWrapper;
 import fr.natsu.rmq.serializer.factory.SerializableFactory;
 import fr.natsu.rmq.serializer.ObjectMarshal;
@@ -14,24 +16,34 @@ public class ListBuffer implements ValueBuffer<List<Object>> {
 
     @Override
     public byte[] transform(String id, ValueWrapper<List<Object>> valueWrapper) {
-        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            StringBuilder stringBuilder = new StringBuilder();
 
-        for(Object object : valueWrapper.getValue()) {
-            stringBuilder.append(GSON.toJson(object)).append(separator);
+            for(Object object : valueWrapper.getValue()) {
+                stringBuilder.append(OBJECT_MAPPER.writeValueAsString(object)).append(separator);
+            }
+
+            return getBytesAndId(stringBuilder.toString().getBytes(StandardCharsets.UTF_8), valueWrapper);
+        } catch(JsonProcessingException exception) {
+            RabbitMQRegistration.getLogger().error("Une erreur est survenue lors de l'écriture de la valeur : " + exception.getMessage());
+            return new byte[0];
         }
-
-        return getBytesAndId(stringBuilder.toString().getBytes(StandardCharsets.UTF_8), valueWrapper);
     }
 
     @Override
     public List<Object> read(SerializableFactory serializableFactory, ObjectMarshal objectMarshal, byte[] bytes) {
-        String strArray = new String(bytes, StandardCharsets.UTF_8);
-        List<Object> list = new ArrayList<>();
+        try {
+            String strArray = new String(bytes, StandardCharsets.UTF_8);
+            List<Object> list = new ArrayList<>();
 
-        for(String element : strArray.split(this.separator)) {
-            list.add(GSON.fromJson(element, Object.class));
+            for(String element : strArray.split(this.separator)) {
+                list.add(OBJECT_MAPPER.readValue(element, Object.class));
+            }
+
+            return list;
+        } catch(JsonProcessingException exception) {
+            RabbitMQRegistration.getLogger().error("Une erreur est survenue lors de la lecture de la valeur : " + exception.getMessage());
+            return null;
         }
-
-        return list;
     }
 }
