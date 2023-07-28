@@ -3,12 +3,12 @@ package fr.natsu.rmq.connect;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import fr.natsu.rmq.protocol.Protocol;
-import fr.natsu.rmq.protocol.ProtocolType;
-import fr.natsu.rmq.protocol.server.Server;
 import fr.natsu.rmq.RabbitMQRegistration;
 import fr.natsu.rmq.pair.ProtocolClientServerPair;
+import fr.natsu.rmq.protocol.Protocol;
+import fr.natsu.rmq.protocol.ProtocolType;
 import fr.natsu.rmq.protocol.client.Client;
+import fr.natsu.rmq.protocol.server.Server;
 import fr.natsu.rmq.protocol.store.ProtocolBucket;
 
 import java.io.IOException;
@@ -27,12 +27,13 @@ public final class DefaultConnector implements Connector {
     public void connectAll(Credentials credentials) {
         // We build a factory.
         ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setChannelRpcTimeout(Integer.MAX_VALUE);
+        connectionFactory.setRequestedHeartbeat(2);
         connectionFactory.setHost(credentials.getHost());
         connectionFactory.setPort(credentials.getPort());
+        connectionFactory.setShutdownTimeout(Integer.MAX_VALUE);
         connectionFactory.setUsername(credentials.getUserName());
         connectionFactory.setPassword(credentials.getPassword());
-        connectionFactory.setRequestedHeartbeat(2);
+        connectionFactory.setChannelRpcTimeout(Integer.MAX_VALUE);
         // And then define a protocol.
         Consumer<Protocol> protocolConsumer = protocol -> {
             try {
