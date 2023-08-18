@@ -36,7 +36,7 @@ public class TCPServer extends Server {
                         RabbitMQRegistration.getLogger().info("[Server TCP] Consumer tried to pass NULL data into " + queue);
                     }
                 };
-                getChannel().basicConsume(queue, false, deliverCallback, cancelled -> {});
+                getChannel().basicConsume(queue, true, deliverCallback, cancelled -> {});
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
